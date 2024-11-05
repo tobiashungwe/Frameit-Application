@@ -23,28 +23,29 @@ jobs:
         run: |
           pwd
           ls -R
+        # This will help confirm the exact path for the backend directory
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.10.9" # or the Python version you're using
+          python-version: "3.10.9"
 
       - name: Install dependencies
         run: |
-          cd ${{ github.workspace }}/app/backend/API
+          cd app/backend/API  # Adjusted to your structure
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd ${{ github.workspace }}/app/backend/API
+          cd app/backend/API
           source venv/bin/activate
           pytest --maxfail=1 --disable-warnings
 
       - name: Lint code
         run: |
-          cd ${{ github.workspace }}/app/backend/API
+          cd app/backend/API
           source venv/bin/activate
           flake8 .
 
@@ -59,14 +60,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14" # or the Node version you're using
+          node-version: "14"
 
       - name: Install dependencies
-        working-directory: frontend
+        working-directory: app/frontend
         run: npm install
 
       - name: Run tests
-        working-directory: frontend
+        working-directory: app/frontend
         run: |
           echo "Placeholder test script. Add actual tests in package.json or test files."
           exit 0  # Temporarily bypass testing error
