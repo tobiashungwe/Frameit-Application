@@ -6,11 +6,12 @@ on:
       - main
       - dev
   pull_request:
+    branches:
       - main
       - dev
 
 jobs:
- backend:
+  backend:
     name: Backend Checks (Flask)
     runs-on: ubuntu-latest
 
