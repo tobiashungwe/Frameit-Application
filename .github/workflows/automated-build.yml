@@ -26,7 +26,7 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install -r requirements.txt
+          pip install -r app/backend/API/requirements.txt
 
       - name: Run tests
         run: |
@@ -75,7 +75,7 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install -r requirements.txt
+          pip install -r app/backend/API/requirements.txt
           python setup.py install  # example if your Flask app uses a setup.py
 
       - name: Build Frontend
