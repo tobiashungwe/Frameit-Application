@@ -50,7 +50,7 @@ jobs:
         shell: bash
         run: |
           source venv/bin/activate
-          pytest --no-fail-on-empty --maxfail=1 --disable-warnings
+          pytest --allow-no-tests --maxfail=1 --disable-warnings
 
       - name: Lint code
         working-directory: backend/API
