@@ -90,3 +90,7 @@ backend/API/*$py.class
 frontend/build/
 frontend/dist/
 frontend/*.cache
+
+# Node modules
+node_modules/
+**/node_modules/
