@@ -40,7 +40,7 @@ jobs:
         working-directory: backend/API
         run: |
           source venv/bin/activate
-          pytest --maxfail=1 --disable-warnings
+          pytest tests/ --maxfail=1 --disable-warnings
 
       - name: Lint code
         working-directory: backend/API
