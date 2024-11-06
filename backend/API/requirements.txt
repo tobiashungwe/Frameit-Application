@@ -5,3 +5,5 @@ flask-swagger-ui
 pytest>=7.0.0
 pytest-cov
 flake8
+pre-commit
+black

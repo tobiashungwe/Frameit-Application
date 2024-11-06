@@ -37,6 +37,10 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
 
+      - name: Run pre-commit hooks
+        run: |
+          pre-commit run --all-files --show-diff-on-failure
+
       - name: Check pytest version and path
         working-directory: backend/API
         shell: bash
