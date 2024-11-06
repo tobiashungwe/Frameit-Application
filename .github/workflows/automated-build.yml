@@ -36,14 +36,17 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
 
+      - name: Check pytest version
+        working-directory: backend/API
+        run: |
+          source venv/bin/activate
+          pytest --version
+
       - name: Run tests
         working-directory: backend/API
         run: |
           source venv/bin/activate
-          # Option A: Use --no-fail-on-empty if you have no tests
           pytest --no-fail-on-empty --maxfail=1 --disable-warnings
-          # Option B: Ensure tests are in 'tests/' directory
-          # pytest tests/ --maxfail=1 --disable-warnings
 
       - name: Lint code
         working-directory: backend/API
