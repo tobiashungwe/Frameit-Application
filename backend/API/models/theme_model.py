@@ -4,7 +4,4 @@ class Theme:
         self.name = name
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name
-        }
+        return {"id": self.id, "name": self.name}

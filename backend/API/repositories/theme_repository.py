@@ -2,6 +2,7 @@ import mysql.connector
 from config import Config
 from models.theme_model import Theme
 
+
 class ThemeRepository:
     def __init__(self):
         self.connection = None
@@ -12,7 +13,7 @@ class ThemeRepository:
                 host=Config.MYSQL_HOST,
                 user=Config.MYSQL_USER,
                 password=Config.MYSQL_PASSWORD,
-                database=Config.MYSQL_DB
+                database=Config.MYSQL_DB,
             )
         return self.connection
 
@@ -20,7 +21,7 @@ class ThemeRepository:
         conn = self._get_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT id, name FROM themes")
-        themes = [Theme(row['id'], row['name']) for row in cursor.fetchall()]
+        themes = [Theme(row["id"], row["name"]) for row in cursor.fetchall()]
         cursor.close()
         return themes
 

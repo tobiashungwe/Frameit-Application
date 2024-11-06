@@ -1,0 +1,96 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environment directories
+venv/
+env/
+ENV/
+*.venv/
+pipenv/
+# If you have virtual environments in other locations
+backend/API/venv/
+backend/API/env/
+
+# Node modules directories
+node_modules/
+**/node_modules/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build directories
+build/
+dist/
+*.egg-info/
+
+# Test and coverage reports
+htmlcov/
+.pytest_cache/
+.coverage
+coverage.xml
+nosetests.xml
+
+# Flask instance folder and static files
+instance/
+web/static/
+
+# Environment variables files
+.env
+.env.*
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# MacOS folder attributes
+*.DS_Store
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# Other files
+*.tmp
+*.temp
+*.bak
+~$*
+
+# Ignore package manager lock files if not needed
+# Uncomment if you want to exclude them
+# package-lock.json
+# yarn.lock
+
+# Ignore compiled code
+*.class
+
+# Ignore binary files
+*.bin
+
+# Ignore backend compiled code
+backend/API/__pycache__/
+backend/API/*.py[cod]
+backend/API/*$py.class
+
+# Ignore frontend build files if any
+frontend/build/
+frontend/dist/
+frontend/*.cache
+
+# Node modules
+node_modules/
+**/node_modules/
