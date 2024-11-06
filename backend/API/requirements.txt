@@ -2,6 +2,6 @@ Flask
 Flask-Cors
 mysql-connector-python
 flask-swagger-ui
-pytest
+pytest>=7.0.0
 pytest-cov
 flake8
