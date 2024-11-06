@@ -2,6 +2,7 @@ import mysql.connector
 from config import Config
 from models.theme_model import Theme
 
+
 class ThemeRepository:
     def __init__(self):
         self.connection = None

@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify
 from main import theme_service
 
+
 theme_blueprint = Blueprint('theme_controller', __name__)
+
 
 @theme_blueprint.route('/', methods=['GET'])
 def get_themes():
