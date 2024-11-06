@@ -31,25 +31,30 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend/API
+        shell: bash
         run: |
           python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
 
-      - name: Check pytest version
+      - name: Check pytest version and path
         working-directory: backend/API
+        shell: bash
         run: |
           source venv/bin/activate
           pytest --version
+          which pytest
 
       - name: Run tests
         working-directory: backend/API
+        shell: bash
         run: |
           source venv/bin/activate
           pytest --no-fail-on-empty --maxfail=1 --disable-warnings
 
       - name: Lint code
         working-directory: backend/API
+        shell: bash
         run: |
           source venv/bin/activate
           flake8 .
