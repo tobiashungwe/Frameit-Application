@@ -40,6 +40,7 @@ Thumbs.db
 #AI 
 backend/model_output/checkpoint-264/model.safetensors
 backend/model_output/checkpoint-264/optimizer.pt
+backend/model_output/fine_tuned_gpt2/model.safetensors
 
 # Build directories
 build/
