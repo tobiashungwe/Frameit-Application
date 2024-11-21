@@ -16,6 +16,8 @@ pipenv/
 backend/API/venv/
 backend/API/env/
 
+
+
 # Node modules directories
 node_modules/
 **/node_modules/
@@ -34,6 +36,10 @@ Thumbs.db
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+#AI 
+backend/model_output/checkpoint-264/model.safetensors
+backend/model_output/checkpoint-264/optimizer.pt
 
 # Build directories
 build/
