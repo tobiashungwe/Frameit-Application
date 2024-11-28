@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch themes and populate the dropdown
-    /*fetch('http://localhost:5000/api/themes')
+    fetch('http://localhost:5000/api/themes')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 themeSelect.appendChild(option);
             });
         })
-        .catch(error => console.error('Error fetching themes:', error));*/
+        .catch(error => console.error('Error fetching themes:', error));
 
     // Add click events for terrain and materials buttons
     document.getElementById('terrain-button').addEventListener('click', () => {
