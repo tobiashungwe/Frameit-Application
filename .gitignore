@@ -16,6 +16,10 @@ pipenv/
 backend/API/venv/
 backend/API/env/
 
+backend/venv/
+backend/env/
+
+
 
 
 # Node modules directories
