@@ -104,6 +104,8 @@ node_modules/
 
 #model output
 backend/model_output/*
+
 backend/offload/
 *.dat
 *.pth
+backend/model_output/checkpoint-264/rng_state.pth
