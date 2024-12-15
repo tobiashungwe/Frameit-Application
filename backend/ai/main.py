@@ -1,10 +1,12 @@
 import asyncio
 from models.dependencies import ThemeDependencies
-from agents.curator_agent import curator_agent
-from agents.researcher_agent import researcher_agent
-from agents.adapter_agent import adapter_agent
-from agents.generator_agent import generator_agent
-from agents.search_agent import search_agent
+from agents import (
+    curator_agent,
+    researcher_agent,
+    adapter_agent,
+    generator_agent,
+    search_agent,
+)
 from logger_config import logger
 
 

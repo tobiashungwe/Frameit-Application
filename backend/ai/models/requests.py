@@ -8,3 +8,7 @@ class ThemeRequest(BaseModel):
 
 class KeywordsResponse(BaseModel):
     keywords: List[str]
+
+
+class SuggestionsResponse(BaseModel):
+    suggestions: list[str]
