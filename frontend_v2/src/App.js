@@ -63,15 +63,16 @@ const handleSearchTheme = async () => {
   setIsSearching(true);
 
   try {
-    const response = await fetch("http://localhost:8000/suggest_keywords", {
+    const response = await fetch("http://localhost:8000/curator/suggest_keywords", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ theme }),
     });
+
     const data = await response.json();
 
-    if (response.ok && Array.isArray(data.keywords)) {
-      setKeywords(data.keywords); // Populate keywords from backend
+    if (response.ok && Array.isArray(data.suggestions)) {
+      setKeywords(data.suggestions);
     } else {
       console.error("Unexpected keywords format:", data);
       alert(t("messages.no_keywords_found"));

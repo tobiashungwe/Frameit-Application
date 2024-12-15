@@ -1,7 +1,8 @@
 from pydantic_ai import Agent, RunContext
-from models.dependencies import ThemeDependencies
-from models.result_models import ThemeResult
-from logger_config import logger
+from backend.models import ThemeDependencies, ThemeResult
+import logfire
+
+logfire.configure()
 
 generator_agent = Agent(
     "groq:llama-3.3-70b-versatile",
@@ -16,7 +17,7 @@ generator_agent = Agent(
 
 @generator_agent.tool
 async def create_story(ctx: RunContext[ThemeDependencies]) -> str:
-    logger.info(
+    logfire.info(
         f"Generator Agent: Creating story for theme '{ctx.deps.theme}' and activity '{ctx.deps.activity_description}'"
     )
     return f"In the {ctx.deps.theme}, {', '.join(ctx.deps.user_keywords)} engage in {ctx.deps.activity_description}. It is an exciting adventure!"

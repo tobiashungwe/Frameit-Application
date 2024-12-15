@@ -5,29 +5,40 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from models.dependencies import ThemeDependencies
-from agents.curator_agent import curator_agent
-from agents.researcher_agent import researcher_agent
-from agents.adapter_agent import adapter_agent
-from agents.generator_agent import generator_agent
-from agents.search_agent import search_agent
-from logger_config import logger
+from backend.models.dependencies import ThemeDependencies
+from backend.ai.agents.curator_agent import curator_agent
+from backend.ai.agents.researcher_agent import researcher_agent
+from backend.ai.agents.adapter_agent import adapter_agent
+from backend.ai.agents.generator_agent import generator_agent
+from backend.ai.agents.search_agent import search_agent
+from backend.ai.agents.curator_agent import curator_router
 
-# Add project root to sys.path
+import logfire
+
+# Dynamically add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
-# Create FastAPI app
-app = FastAPI()
 
-# CORS configuration
-origins = ["http://localhost:3000"]
+# Configure Logfire
+logfire.configure()
+
+# Todo: Make sure to update the logger with something that is more flexible so that i do not break the principle of DRY
+
+
+app = FastAPI()
+logfire.instrument_fastapi(app)
+
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:3000"],  # Adjust as needed
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include agent router
+app.include_router(curator_router, prefix="/curator", tags=["Curator Agent"])
 
 
 # Define API routes for agents
@@ -58,7 +69,7 @@ async def run_generator_agent(deps: ThemeDependencies):
 
 # CLI-based workflow
 async def cli_workflow():
-    logger.info("Starting the multi-agent workflow.")
+    logfire.info("Starting the multi-agent workflow.")
 
     deps = ThemeDependencies(
         theme="Mario",
@@ -68,27 +79,27 @@ async def cli_workflow():
 
     # Curator Agent
     curator_result = await curator_agent.run(deps=deps)
-    logger.info(f"Curator Result: {curator_result.data.snippets}")
+    logfire.info(f"Curator Result: {curator_result.data.snippets}")
 
     # Researcher Agent
     researcher_result = await researcher_agent.run(deps=deps)
-    logger.info(f"Researcher Result: {researcher_result.data.snippets}")
+    logfire.info(f"Researcher Result: {researcher_result.data.snippets}")
 
     # Search Agent (if needed)
     if not researcher_result.data.snippets:
         search_result = await search_agent.run(deps=deps)
-        logger.info(f"Search Result: {search_result.data.snippets}")
+        logfire.info(f"Search Result: {search_result.data.snippets}")
         deps.theme_info = (
             search_result.data.snippets
         )  # Pass search results to next agents
 
     # Adapter Agent
     adapter_result = await adapter_agent.run(deps=deps)
-    logger.info(f"Adapter Result: {adapter_result.data.snippets}")
+    logfire.info(f"Adapter Result: {adapter_result.data.snippets}")
 
     # Generator Agent
     generator_result = await generator_agent.run(deps=deps)
-    logger.info(f"Generated Story: {generator_result.data.story}")
+    logfire.info(f"Generated Story: {generator_result.data.story}")
 
     print("Generated Story:\n", generator_result.data.story)
 

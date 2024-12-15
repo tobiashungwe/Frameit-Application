@@ -1,30 +1,14 @@
 from pydantic_ai import Agent, RunContext
 from typing import List
-from fastapi import FastAPI
-from models import SuggestionsResponse, ThemeRequest, ThemeDependencies
-from fastapi.middleware.cors import CORSMiddleware
-
-
+from fastapi import APIRouter
+from backend.models import ThemeDependencies, SuggestionsResponse, ThemeRequest
 import logfire
+
+curator_router = APIRouter()
 
 # Configure Logfire
 logfire.configure()
 
-# Initialize FastAPI app
-app = FastAPI()
-logfire.instrument_fastapi(app)
-
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000"
-    ],  # Update this to match your React app's URL
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
-)
 
 # Curator Agent (Theme Suggestions)
 curator_agent = Agent(
@@ -67,7 +51,7 @@ async def suggest_keywords(ctx: RunContext[ThemeDependencies]) -> List[str]:
     return keywords
 
 
-@app.post("/suggest_themes", response_model=SuggestionsResponse)
+@curator_router.post("/suggest_themes", response_model=SuggestionsResponse)
 async def suggest_themes():
     """Fetch standalone theme suggestions from the Curator Agent."""
     async with curator_agent.run_stream("") as result:
@@ -79,13 +63,17 @@ async def suggest_themes():
     return SuggestionsResponse(suggestions=themes)
 
 
-@app.post("/suggest_keywords", response_model=SuggestionsResponse)
-async def request_keywords(request: ThemeRequest):
+@curator_router.post("/suggest_keywords", response_model=SuggestionsResponse)
+async def suggest_keywords_endpoint(request: ThemeRequest):
     """Fetch standalone keywords for the given theme from the Keyword Agent."""
     async with keyword_agent.run_stream(request.theme) as result:
         keywords = []
         async for text in result.stream():
-            keywords.extend([keyword.strip() for keyword in text.split(",")])
+            # Split and clean each text stream for keywords
+            for keyword in text.split("\n"):
+                keyword = keyword.strip()
+                if keyword and not keyword.isdigit():  # Filter empty lines and numbers
+                    keywords.append(keyword)
 
     logfire.info(f"Keywords for theme '{request.theme}': {keywords}")
     return SuggestionsResponse(suggestions=keywords)

@@ -1,5 +1,8 @@
 from typing import List, Dict
 import requests
+import logfire
+
+logfire.configure()
 
 
 # Curator Agent: Suggests themes and related keywords

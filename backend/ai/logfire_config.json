@@ -1,0 +1,11 @@
+{
+  "send_to_logfire": "always",
+  "log_level": "info",
+  "environment": "development",
+  "service": "AI_Project_Backend",
+  "host": "localhost",
+  "tags": {
+    "project": "AI_Project",
+    "module": "backend"
+  }
+}
