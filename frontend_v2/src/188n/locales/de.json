@@ -1,0 +1,31 @@
+{
+  "labels": {
+    "upload_exercise": "Aufgabe hochladen",
+    "theme": "Thema",
+    "search": "Suchen",
+    "start": "Start",
+    "language": "Sprache",
+    "groups": "Gruppen",
+    "terrain": "Gelände",
+    "materials": "Material"
+  },
+  "messages": {
+    "enter_theme": "Geben Sie ein Thema ein, um zu suchen.",
+    "processing_inputs": "Verarbeitung mit diesen Eingaben:",
+    "theme_found_locally": "Thema lokal gefunden:",
+    "theme_not_found": "Thema nicht lokal gefunden. Suche nach weiteren Details über:",
+    "all_fields_required": "Alle Felder sind erforderlich!"
+  },
+  "placeholders": {
+    "select_theme": "Thema suchen oder auswählen",
+    "select_material": "Material auswählen",
+    "select_terrain": "Gelände auswählen",
+    "drag_drop_file": "Datei hierher ziehen oder klicken, um eine auszuwählen"
+  },
+  "options": {
+    "themes": ["Mario", "Minions", "Weihnachten", "Brawl Stars"],
+    "materials": ["Reifen", "Bälle", "Kegel", "Matten", "Tunnel"],
+    "terrains": ["Turnhalle", "Rasenfeld", "Spielplatz", "Strand"],
+    "groups": ["1", "2", "3", "4"]
+  }
+}

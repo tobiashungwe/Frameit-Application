@@ -1,0 +1,31 @@
+{
+  "labels": {
+    "upload_exercise": "Carica l'esercizio",
+    "theme": "Tema",
+    "search": "Cerca",
+    "start": "Inizia",
+    "language": "Lingua",
+    "groups": "Gruppi",
+    "terrain": "Terreno",
+    "materials": "Materiali"
+  },
+  "messages": {
+    "enter_theme": "Inserisci un tema per cercare.",
+    "processing_inputs": "Elaborazione con questi input:",
+    "theme_found_locally": "Tema trovato localmente:",
+    "theme_not_found": "Tema non trovato localmente. Ricerca ulteriori dettagli su:",
+    "all_fields_required": "Tutti i campi sono obbligatori!"
+  },
+  "placeholders": {
+    "select_theme": "Cerca o seleziona un tema",
+    "select_material": "Seleziona materiale",
+    "select_terrain": "Seleziona terreno",
+    "drag_drop_file": "Trascina un file qui o fai clic per selezionarne uno"
+  },
+  "options": {
+    "themes": ["Mario", "Minions", "Natale", "Brawl Stars"],
+    "materials": ["Cerchi", "Palloni", "Coni", "Tappetini", "Tunnel"],
+    "terrains": ["Palestra", "Campo erboso", "Cortile", "Spiaggia"],
+    "groups": ["1", "2", "3", "4"]
+  }
+}

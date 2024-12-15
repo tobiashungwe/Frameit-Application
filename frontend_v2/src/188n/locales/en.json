@@ -1,0 +1,31 @@
+{
+  "labels": {
+    "upload_exercise": "Upload Exercise",
+    "theme": "Theme",
+    "search": "Search",
+    "start": "Start",
+    "language": "Language",
+    "groups": "Groups",
+    "terrain": "Terrain",
+    "materials": "Materials"
+  },
+  "messages": {
+    "enter_theme": "Enter a theme to search.",
+    "processing_inputs": "Processing with these inputs:",
+    "theme_found_locally": "Theme found locally:",
+    "theme_not_found": "Theme not found locally. Searching for more details about:",
+    "all_fields_required": "All fields are required!"
+  },
+  "placeholders": {
+    "select_theme": "Search or select a theme",
+    "select_material": "Select material",
+    "select_terrain": "Select terrain",
+    "drag_drop_file": "Drag 'n' drop a file here, or click to select one"
+  },
+  "options": {
+    "themes": ["Mario", "Minions", "Christmas", "Brawl Stars"],
+    "materials": ["Hoops", "Balls", "Cones", "Mats", "Tunnels"],
+    "terrains": ["Indoor Gym", "Grass Field", "Playground", "Beach"],
+    "groups": ["1", "2", "3", "4"]
+  }
+}

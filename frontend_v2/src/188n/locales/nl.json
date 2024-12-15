@@ -1,0 +1,31 @@
+{
+  "labels": {
+    "upload_exercise": "Upload de Opdracht",
+    "theme": "Thema",
+    "search": "Zoek",
+    "start": "Start",
+    "language": "Taal",
+    "groups": "Groepen",
+    "terrain": "Terrein",
+    "materials": "Materiaal"
+  },
+  "messages": {
+    "enter_theme": "Voer een thema in om te zoeken.",
+    "processing_inputs": "Verwerken met deze invoer:",
+    "theme_found_locally": "Thema lokaal gevonden:",
+    "theme_not_found": "Thema niet lokaal gevonden. Zoeken naar meer details over:",
+    "all_fields_required": "Alle velden zijn verplicht!"
+  },
+  "placeholders": {
+    "select_theme": "Zoek of selecteer een thema",
+    "select_material": "Selecteer materiaal",
+    "select_terrain": "Selecteer terrein",
+    "drag_drop_file": "Sleep een bestand hierheen of klik om er een te selecteren"
+  },
+  "options": {
+    "themes": ["Mario", "Minions", "Kerstmis", "Brawl Stars"],
+    "materials": ["Hoepels", "Ballen", "Kegels", "Matten", "Tunnels"],
+    "terrains": ["Gymzaal", "Grasveld", "Speelplaats", "Strand"],
+    "groups": ["1", "2", "3", "4"]
+  }
+}
