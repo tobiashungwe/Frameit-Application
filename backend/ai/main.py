@@ -1,16 +1,63 @@
 import asyncio
+import sys
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from models.dependencies import ThemeDependencies
-from agents import (
-    curator_agent,
-    researcher_agent,
-    adapter_agent,
-    generator_agent,
-    search_agent,
-)
+from agents.curator_agent import curator_agent
+from agents.researcher_agent import researcher_agent
+from agents.adapter_agent import adapter_agent
+from agents.generator_agent import generator_agent
+from agents.search_agent import search_agent
 from logger_config import logger
 
+# Add project root to sys.path
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
-async def main():
+# Create FastAPI app
+app = FastAPI()
+
+# CORS configuration
+origins = ["http://localhost:3000"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Define API routes for agents
+@app.post("/curator")
+async def run_curator_agent(deps: ThemeDependencies):
+    return await curator_agent.run(deps)
+
+
+@app.post("/researcher")
+async def run_researcher_agent(deps: ThemeDependencies):
+    return await researcher_agent.run(deps)
+
+
+@app.post("/search")
+async def run_search_agent(deps: ThemeDependencies):
+    return await search_agent.run(deps)
+
+
+@app.post("/adapter")
+async def run_adapter_agent(deps: ThemeDependencies):
+    return await adapter_agent.run(deps)
+
+
+@app.post("/generator")
+async def run_generator_agent(deps: ThemeDependencies):
+    return await generator_agent.run(deps)
+
+
+# CLI-based workflow
+async def cli_workflow():
     logger.info("Starting the multi-agent workflow.")
 
     deps = ThemeDependencies(
@@ -46,5 +93,9 @@ async def main():
     print("Generated Story:\n", generator_result.data.story)
 
 
+# Entry point
 if __name__ == "__main__":
-    asyncio.run(main())
+    if "uvicorn" in sys.argv[0]:
+        pass  # Allow uvicorn to start the FastAPI app
+    else:
+        asyncio.run(cli_workflow())
