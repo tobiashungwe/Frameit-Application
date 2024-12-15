@@ -101,3 +101,9 @@ frontend/*.cache
 # Node modules
 node_modules/
 **/node_modules/
+
+#model output
+backend/model_output/
+backend/offload/
+*.dat
+*.pth
