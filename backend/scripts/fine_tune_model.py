@@ -1,32 +1,36 @@
 import os
-from transformers import GPT2Tokenizer, GPT2LMHeadModel, Trainer, TrainingArguments, TextDataset, DataCollatorForLanguageModeling
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    Trainer,
+    TrainingArguments,
+    DataCollatorForLanguageModeling,
+)
+from datasets import load_dataset
 
-# Load the GPT-2 tokenizer and model
-model_name = "meta-llama/Meta-Llama-3-8B"
-tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-model = GPT2LMHeadModel.from_pretrained(model_name)
+# Load the Falcon tokenizer and model
+model_name = "tiiuae/falcon-7b-instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)
 
-# Dynamically construct paths
-script_dir = os.path.dirname(__file__)  # Get the directory of the current script
-train_file_path = os.path.join(script_dir, '../data/theme_training.txt')  # Path to the training data
-output_dir = os.path.join(script_dir, '../model_output')  # Output directory for the fine-tuned model
+# Define paths
+script_dir = os.path.dirname(__file__)
+train_file_path = os.path.join(script_dir, "../data/theme_training.txt")
+output_dir = os.path.join(script_dir, "../model_output_falcon")
 
-# Tokenize the training data
-def load_dataset(file_path, tokenizer):
+
+# Load the dataset
+def load_dataset_with_datasets(file_path):
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Training file not found: {file_path}")
-    dataset = TextDataset(
-        tokenizer=tokenizer,
-        file_path=file_path,
-        block_size=128
-    )
-    return dataset
+    dataset = load_dataset("text", data_files={"train": file_path})
+    return dataset["train"]
 
-train_dataset = load_dataset(train_file_path, tokenizer)
 
-data_collator = DataCollatorForLanguageModeling(
-    tokenizer=tokenizer, mlm=False
-)
+train_dataset = load_dataset_with_datasets(train_file_path)
+
+# Prepare the data collator
+data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
 # Set training arguments
 training_args = TrainingArguments(
@@ -36,6 +40,9 @@ training_args = TrainingArguments(
     per_device_train_batch_size=2,
     save_steps=10_000,
     save_total_limit=2,
+    logging_dir=os.path.join(output_dir, "logs"),
+    logging_steps=500,
+    evaluation_strategy="steps",
 )
 
 # Initialize the Trainer
@@ -43,14 +50,12 @@ trainer = Trainer(
     model=model,
     args=training_args,
     data_collator=data_collator,
-    train_dataset=train_dataset
+    train_dataset=train_dataset,
 )
-
-
 
 # Train the model
 trainer.train()
 
 # Save the fine-tuned model
-model.save_pretrained(os.path.join(output_dir, "fine_tuned_gpt2"))
-tokenizer.save_pretrained(os.path.join(output_dir, "fine_tuned_gpt2"))
+model.save_pretrained(os.path.join(output_dir, "fine_tuned_falcon"))
+tokenizer.save_pretrained(os.path.join(output_dir, "fine_tuned_falcon"))

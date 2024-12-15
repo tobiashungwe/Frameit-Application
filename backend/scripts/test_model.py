@@ -1,54 +1,61 @@
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import os
+from transformers import (
+    GPT2Tokenizer,
+    GPT2LMHeadModel,
+    Trainer,
+    TrainingArguments,
+    TextDataset,
+    DataCollatorForLanguageModeling,
+)
 
-def load_model(model_path):
-    """
-    Load the fine-tuned model and tokenizer from the specified path.
-    """
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path)
-    model = GPT2LMHeadModel.from_pretrained(model_path)
-    return model, tokenizer
+# Load the GPT-2 tokenizer and model
+model_name = "gpt2"
+tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+model = GPT2LMHeadModel.from_pretrained(model_name)
 
-def generate_text(model, tokenizer, prompt, max_length=100, num_return_sequences=1):
-    """
-    Generate text using the fine-tuned model given an input prompt.
-    """
-    input_ids = tokenizer.encode(prompt, return_tensors='pt')
-    outputs = model.generate(
-        input_ids,
-        max_length=max_length,
-        num_return_sequences=num_return_sequences,
-        no_repeat_ngram_size=2,  # Avoid repeating phrases
-        top_k=50,                # Consider top 50 options for diversity
-        top_p=0.95,              # Nucleus sampling for creativity
-        temperature=0.7          # Lower value -> less randomness
-    )
-    return [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+# Dynamically construct paths
+script_dir = os.path.dirname(__file__)  # Get the directory of the current script
+train_file_path = os.path.join(
+    script_dir, "../data/theme_training.txt"
+)  # Path to the training data
+output_dir = os.path.join(
+    script_dir, "../model_output"
+)  # Output directory for the fine-tuned model
 
-def main():
-    # Path to the fine-tuned model
-    model_path = "../model_output/fine_tuned_gpt2"
-    
-    
-    
-    # Load the fine-tuned model and tokenizer
-    model, tokenizer = load_model(model_path)
-    print("Model and tokenizer loaded successfully!")
 
-    # Example input prompts
-    prompts = [
-        "Halloween:",
-        "Fortnite:",
-        "Superheroes:",
-        "Christmas:",
-    ]
+# Tokenize the training data
+def load_dataset(file_path, tokenizer):
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Training file not found: {file_path}")
+    dataset = TextDataset(tokenizer=tokenizer, file_path=file_path, block_size=128)
+    return dataset
 
-    # Generate and print text for each prompt
-    for prompt in prompts:
-        print(f"Prompt: {prompt}")
-        generated_texts = generate_text(model, tokenizer, prompt)
-        for i, text in enumerate(generated_texts):
-            print(f"Generated Text {i + 1}: {text}")
-        print("-" * 80)
 
-if __name__ == "__main__":
-    main()
+train_dataset = load_dataset(train_file_path, tokenizer)
+
+data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+
+# Set training arguments
+training_args = TrainingArguments(
+    output_dir=output_dir,
+    overwrite_output_dir=True,
+    num_train_epochs=3,
+    per_device_train_batch_size=2,
+    save_steps=10_000,
+    save_total_limit=2,
+)
+
+# Initialize the Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    data_collator=data_collator,
+    train_dataset=train_dataset,
+)
+
+# Train the model
+trainer.train()
+
+# Save the fine-tuned model
+model.save_pretrained(os.path.join(output_dir, "fine_tuned_gpt2"))
+tokenizer.save_pretrained(os.path.join(output_dir, "fine_tuned_gpt2"))
