@@ -24,7 +24,8 @@ keyword_agent = Agent(
     "groq:llama-3.3-70b-versatile",
     system_prompt=(
         "For the given theme, suggest the most relevant standalone keywords. "
-        "Keywords should be concise and directly related to the theme, such as 'Mushroom', 'Pipe', 'Princess Peach'."
+        "Keywords should be concise and directly related to the theme, such as 'Mushroom', 'Pipe', 'Princess Peach'. "
+        "Do not include explanatory text or numbers, only the keywords."
     ),
 )
 
@@ -33,7 +34,7 @@ keyword_agent = Agent(
 
 
 @curator_agent.tool
-async def suggest_keywords(ctx: RunContext[ThemeDependencies]) -> List[str]:
+async def suggest_keywords_tool(ctx: RunContext[ThemeDependencies]) -> List[str]:
     logfire.info(f"Curator Agent: Received theme '{ctx.deps.theme}'")
     response = await ctx.agent.run(
         f"Provide a list of standalone keywords for the theme '{ctx.deps.theme}' without explanations or extra text."
@@ -64,16 +65,27 @@ async def suggest_themes():
 
 
 @curator_router.post("/suggest_keywords", response_model=SuggestionsResponse)
-async def suggest_keywords_endpoint(request: ThemeRequest):
+async def suggest_keywords(request: ThemeRequest):
     """Fetch standalone keywords for the given theme from the Keyword Agent."""
     async with keyword_agent.run_stream(request.theme) as result:
-        keywords = []
+        raw_keywords = []
         async for text in result.stream():
-            # Split and clean each text stream for keywords
-            for keyword in text.split("\n"):
-                keyword = keyword.strip()
-                if keyword and not keyword.isdigit():  # Filter empty lines and numbers
-                    keywords.append(keyword)
+            raw_keywords.extend(text.split("\n"))
 
-    logfire.info(f"Keywords for theme '{request.theme}': {keywords}")
+    # Filter and clean the keywords
+    keywords = []
+    for keyword in raw_keywords:
+        # Remove unnecessary phrases and ensure only valid keywords remain
+        keyword = keyword.strip()
+        if (
+            keyword  # Non-empty
+            and not keyword.startswith("Here are")  # Remove explanatory phrases
+            and not keyword.startswith("1.")  # Remove numbered lists
+            and not any(c.isdigit() for c in keyword)  # Ignore items with numbers
+        ):
+            keywords.append(keyword)
+
+    keywords = list(set(keywords))
+
+    logfire.info(f"Final cleaned keywords for '{request.theme}': {keywords}")
     return SuggestionsResponse(suggestions=keywords)
