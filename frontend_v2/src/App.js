@@ -28,10 +28,6 @@ const appTheme = createTheme({
   },
 });
 
-const staticThemes = ["Mario", "Minions", "Christmas", "Brawl Stars"];
-const staticMaterials = ["Hoops", "Balls", "Cones", "Mats", "Tunnels"];
-const staticTerrains = ["Indoor Gym", "Grass Field", "Playground", "Beach"];
-
 function App() {
   const { t, i18n } = useTranslation();
 
@@ -58,32 +54,32 @@ function App() {
     setLanguage(selectedLanguage);
   };
 
-const handleSearchTheme = async () => {
-  if (!theme) return alert(t("messages.enter_theme"));
-  setIsSearching(true);
+  const handleSearchTheme = async () => {
+    if (!theme) return alert(t("messages.enter_theme"));
+    setIsSearching(true);
 
-  try {
-    const response = await fetch("http://localhost:8000/curator/suggest_keywords", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ theme }),
-    });
+    try {
+      const response = await fetch("http://localhost:8000/curator/suggest_keywords", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ theme }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok && Array.isArray(data.suggestions)) {
-      setKeywords(data.suggestions);
-    } else {
-      console.error("Unexpected keywords format:", data);
-      alert(t("messages.no_keywords_found"));
+      if (response.ok && Array.isArray(data.suggestions)) {
+        setKeywords(data.suggestions);
+      } else {
+        console.error("Unexpected keywords format:", data);
+        alert(t("messages.no_keywords_found"));
+      }
+    } catch (error) {
+      console.error("Error fetching keywords:", error);
+      alert(t("messages.error_fetching_theme"));
+    } finally {
+      setIsSearching(false);
     }
-  } catch (error) {
-    console.error("Error fetching keywords:", error);
-    alert(t("messages.error_fetching_theme"));
-  } finally {
-    setIsSearching(false);
-  }
-};
+  };
 
   const handleKeywordSelection = (keyword) => {
     setSelectedKeywords((prev) =>
@@ -158,7 +154,7 @@ const handleSearchTheme = async () => {
           <Box mt={4}>
             <Typography variant="h6">{t("labels.theme")}</Typography>
             <Autocomplete
-              options={staticThemes}
+              options={t("options.themes", { returnObjects: true })} // Fetch localized themes
               freeSolo
               onInputChange={(e, value) => setTheme(value)}
               renderInput={(params) => (
@@ -212,7 +208,7 @@ const handleSearchTheme = async () => {
                 label={t("placeholders.select_groups")}
                 fullWidth
               >
-                {staticMaterials.map((group) => (
+                {t("options.groups", { returnObjects: true }).map((group) => (
                   <MenuItem key={group} value={group}>
                     {group}
                   </MenuItem>
@@ -228,7 +224,7 @@ const handleSearchTheme = async () => {
                 label={t("placeholders.select_terrain")}
                 fullWidth
               >
-                {staticTerrains.map((terrain) => (
+                {t("options.terrains", { returnObjects: true }).map((terrain) => (
                   <MenuItem key={terrain} value={terrain}>
                     {terrain}
                   </MenuItem>
@@ -246,7 +242,7 @@ const handleSearchTheme = async () => {
               label={t("placeholders.select_material")}
               fullWidth
             >
-              {staticMaterials.map((mat) => (
+              {t("options.materials", { returnObjects: true }).map((mat) => (
                 <MenuItem key={mat} value={mat}>
                   {mat}
                 </MenuItem>
