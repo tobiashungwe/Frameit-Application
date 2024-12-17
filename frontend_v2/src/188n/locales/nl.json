@@ -19,6 +19,7 @@
   "placeholders": {
     "select_theme": "Zoek of selecteer een thema",
     "select_material": "Selecteer materiaal",
+    "select_groups": "Selecteer aantal groepen",
     "select_terrain": "Selecteer terrein",
     "drag_drop_file": "Sleep een bestand hierheen of klik om er een te selecteren"
   },

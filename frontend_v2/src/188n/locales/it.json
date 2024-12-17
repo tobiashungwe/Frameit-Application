@@ -19,6 +19,7 @@
   "placeholders": {
     "select_theme": "Cerca o seleziona un tema",
     "select_material": "Seleziona materiale",
+    "select_groups": "Seleziona il numero di gruppi",
     "select_terrain": "Seleziona terreno",
     "drag_drop_file": "Trascina un file qui o fai clic per selezionarne uno"
   },
