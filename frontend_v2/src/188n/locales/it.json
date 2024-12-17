@@ -7,7 +7,8 @@
     "language": "Lingua",
     "groups": "Gruppi",
     "terrain": "Terreno",
-    "materials": "Materiali"
+    "materials": "Materiali",
+    "generated_keywords": "Parole chiave generate"
   },
   "messages": {
     "enter_theme": "Inserisci un tema per cercare.",
@@ -19,6 +20,7 @@
   "placeholders": {
     "select_theme": "Cerca o seleziona un tema",
     "select_material": "Seleziona materiale",
+    "select_groups": "Seleziona il numero di gruppi",
     "select_terrain": "Seleziona terreno",
     "drag_drop_file": "Trascina un file qui o fai clic per selezionarne uno"
   },
