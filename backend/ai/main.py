@@ -2,16 +2,27 @@ import asyncio
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI  # , HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.models.dependencies import ThemeDependencies
-from backend.ai.agents.curator_agent import curator_agent
-from backend.ai.agents.researcher_agent import researcher_agent
-from backend.ai.agents.adapter_agent import adapter_agent
-from backend.ai.agents.generator_agent import generator_agent
-from backend.ai.agents.search_agent import search_agent
+from backend.ai.agents import (
+    curator_agent,
+    researcher_agent,
+    search_agent,
+    adapter_agent,
+    generator_agent,
+    # keyword_agent,
+    # ,  translator_agent, editor_agent
+)
 from backend.ai.agents.curator_agent import curator_router
+
+# from backend.models import (
+#     ActivityRequest,
+#     SuggestionsResponse,
+#     StoryResponse,
+#     ThemeRequest,
+# )
 
 import logfire
 
@@ -65,6 +76,47 @@ async def run_adapter_agent(deps: ThemeDependencies):
 @app.post("/generator")
 async def run_generator_agent(deps: ThemeDependencies):
     return await generator_agent.run(deps)
+
+
+# # Generate Keywords Workflow
+# @app.post("/generate_keywords", response_model=SuggestionsResponse)
+# async def generate_keywords(request: ThemeRequest):
+#     logfire.info(f"Generating keywords for theme: {request.theme}")
+#     keywords = await keyword_agent.tools.fetch_keywords(request)
+#     if not keywords:
+#         logfire.info("No keywords found. Fetching via Search Agent.")
+#         keywords = await search_keywords({"query": f"{request.theme} keywords"})
+#     return SuggestionsResponse(suggestions=keywords)
+
+
+# # PHASE 2: STORY GENERATION
+# @app.post("/generate_story", response_model=StoryResponse)
+# async def generate_story(request: ActivityRequest):
+#     try:
+#         theme = request.theme
+#         selected_keywords = request.selected_keywords
+#         activity_description = request.activity_description
+
+#         logfire.info("Step 2.1: Fetching detailed theme data...")
+#         theme_details = await researcher_agent.fetch_theme_details(theme, selected_keywords)
+
+#         logfire.info("Step 2.2: Mapping activity objects...")
+#         object_mapping = await adapter_agent.map_objects(activity_description, theme_details)
+
+#         logfire.info("Step 2.3: Generating story...")
+#         story = await generator_agent.generate_story(
+#             activity_description, theme_details, object_mapping, selected_keywords
+#         )
+
+#         #ToDo: Add traslation agent
+#         logfire.info("Step 2.4: Translating story...")
+#         # translated_story = await translator_agent.translate_story(story, request.language)
+
+#         return StoryResponse(story=translated_story)
+
+#     except Exception as e:
+#         logfire.error(f"Error generating story: {e}")
+#         raise HTTPException(status_code=500, detail="Failed to generate story.")
 
 
 # CLI-based workflow

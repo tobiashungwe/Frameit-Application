@@ -59,7 +59,7 @@ function App() {
     setIsSearching(true);
 
     try {
-      const response = await fetch("http://localhost:8000/curator/suggest_keywords", {
+      const response = await fetch("http://localhost:8000/generate_keywords", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme }),

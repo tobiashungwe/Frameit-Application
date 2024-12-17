@@ -1,35 +1,28 @@
 from pydantic_ai import Agent, RunContext
-from backend.models.dependencies import ThemeDependencies
-from backend.ai.agents import search_agent
+from backend.models import ResearchDependencies
+from typing import Dict, List
 import logfire
 
 logfire.configure()
 
 researcher_agent = Agent(
     "groq:llama-3.3-70b-versatile",
-    deps_type=ThemeDependencies,
-    system_prompt="Provide detailed information about the theme '{theme}'.",
+    deps_type=ResearchDependencies,
+    system_prompt="Provide detailed and structured information about a given theme, including its characters, items, and settings.",
 )
 
 
 @researcher_agent.tool
-async def retrieve_theme_details(ctx: RunContext[ThemeDependencies]) -> dict:
-    logfire.info(f"Researcher Agent: Retrieving details for theme '{ctx.deps.theme}'")
-    if ctx.deps.theme.lower() == "mario":
-        details = {
-            "characters": ["Mario", "Luigi", "Princess Peach"],
-            "items": ["Mushrooms", "Warp Pipes", "Fire Flowers"],
-            "enemies": ["Goombas", "Koopas"],
-            "settings": ["Mushroom Kingdom"],
-        }
+async def fetch_theme_details(
+    ctx: RunContext[ResearchDependencies],
+) -> Dict[str, List[str]]:
+    with logfire.span("researcher_agent:fetch_theme_details"):
         logfire.info(
-            f"Researcher Agent: Static details for '{ctx.deps.theme}' found: {details}"
+            f"Researching theme '{ctx.deps.theme}' with keywords: {ctx.deps.user_keywords}"
         )
-        return details
-
-    # If no static details, fallback to SearchAgent
-    search_result = await search_agent.run(deps=ctx.deps)
-    logfire.info(
-        f"Researcher Agent: Retrieved details via SearchAgent for '{ctx.deps.theme}': {search_result.data.snippets}"
-    )
-    return search_result.data.snippets
+        response = await ctx.agent.run(
+            f"Provide a detailed summary for the theme '{ctx.deps.theme}' including these keywords: "
+            f"{', '.join(ctx.deps.user_keywords)}."
+        )
+        details = [line.strip() for line in response.data.split("\n") if line.strip()]
+        return {"details": details}
