@@ -17,7 +17,6 @@ import {
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 
-// Create a Material-UI theme
 const appTheme = createTheme({
   palette: {
     primary: { main: "#3f51b5" },
@@ -27,6 +26,10 @@ const appTheme = createTheme({
     fontFamily: "Roboto, sans-serif",
   },
 });
+
+const staticMaterials = ["Hoops", "Balls", "Cones", "Mats", "Tunnels"];
+const staticTerrains = ["Indoor Gym", "Grass Field", "Playground", "Beach"];
+const staticGroups = ["Small Group", "Medium Group", "Large Group"];
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -39,7 +42,10 @@ function App() {
   const [groupCount, setGroupCount] = useState("");
   const [keywords, setKeywords] = useState([]); // Store keywords from Curator Agent
   const [selectedKeywords, setSelectedKeywords] = useState([]); // Store user-selected keywords
+  const [activityDescription, setActivityDescription] = useState(""); // Store the activity description
+  const [story, setStory] = useState(""); // Store the generated story
   const [isSearching, setIsSearching] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const onDrop = (acceptedFiles) => setFile(acceptedFiles[0]);
 
@@ -89,16 +95,48 @@ function App() {
     );
   };
 
-  const handleStart = () => {
-    if (!file || !theme || !groupCount || !terrain || !material) {
+  const handleGenerateStory = async () => {
+    if (
+      !theme ||
+      !activityDescription ||
+      !groupCount ||
+      !terrain ||
+      !material ||
+      selectedKeywords.length === 0
+    ) {
       alert(t("messages.all_fields_required"));
       return;
     }
-    alert(
-      `${t("messages.processing_inputs")}\n${t("labels.theme")}: ${theme}\n${t(
-        "labels.selected_keywords"
-      )}: ${selectedKeywords.join(", ")}`
-    );
+
+    setIsGenerating(true);
+
+    //todo: Fix activity description with correct format, make sure to give it a good response!
+    try {
+      const response = await fetch("http://localhost:8000/generate_story", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          theme,
+          activity_description: `${activityDescription}, using ${material} in a ${terrain} for a ${groupCount}.`,
+          selected_keywords: selectedKeywords,
+          language,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStory(data.story);
+      } else {
+        const errorData = await response.json();
+        console.error("Error generating story:", errorData);
+        alert(`Error: ${errorData.detail}`);
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      alert("An unexpected error occurred while generating the story.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -151,10 +189,22 @@ function App() {
             </Typography>
           </Box>
 
+          {/* <Box mt={4}>
+            <Typography variant="h6">{t("labels.activity_description")}</Typography>
+            <TextField
+              value={activityDescription}
+              onChange={(e) => setActivityDescription(e.target.value)}
+              label={t("placeholders.enter_activity_description")}
+              variant="outlined"
+              fullWidth
+              margin="normal"
+            />
+          </Box> */}
+
           <Box mt={4}>
             <Typography variant="h6">{t("labels.theme")}</Typography>
             <Autocomplete
-              options={t("options.themes", { returnObjects: true })} // Fetch localized themes
+              options={t("options.themes", { returnObjects: true })}
               freeSolo
               onInputChange={(e, value) => setTheme(value)}
               renderInput={(params) => (
@@ -208,7 +258,7 @@ function App() {
                 label={t("placeholders.select_groups")}
                 fullWidth
               >
-                {t("options.groups", { returnObjects: true }).map((group) => (
+                {staticGroups.map((group) => (
                   <MenuItem key={group} value={group}>
                     {group}
                   </MenuItem>
@@ -224,7 +274,7 @@ function App() {
                 label={t("placeholders.select_terrain")}
                 fullWidth
               >
-                {t("options.terrains", { returnObjects: true }).map((terrain) => (
+                {staticTerrains.map((terrain) => (
                   <MenuItem key={terrain} value={terrain}>
                     {terrain}
                   </MenuItem>
@@ -242,7 +292,7 @@ function App() {
               label={t("placeholders.select_material")}
               fullWidth
             >
-              {t("options.materials", { returnObjects: true }).map((mat) => (
+              {staticMaterials.map((mat) => (
                 <MenuItem key={mat} value={mat}>
                   {mat}
                 </MenuItem>
@@ -250,16 +300,24 @@ function App() {
             </TextField>
           </Box>
 
-          <Box mt={4} textAlign="center">
+          <Box mt={4}>
             <Button
               variant="contained"
               color="primary"
-              onClick={handleStart}
-              sx={{ width: "60%" }}
+              onClick={handleGenerateStory}
+              disabled={isGenerating}
+              fullWidth
             >
-              {t("labels.start")}
+              {isGenerating ? <CircularProgress size={24} /> : t("labels.generate_story")}
             </Button>
           </Box>
+
+          {story && (
+            <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
+              <Typography variant="h6">{t("labels.generated_story")}</Typography>
+              <Typography>{story}</Typography>
+            </Box>
+          )}
         </Box>
       </Container>
     </ThemeProvider>

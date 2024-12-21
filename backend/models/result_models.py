@@ -1,9 +1,8 @@
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class SearchResult(BaseModel):
-    snippets: List[str] = Field(
+    snippets: list[str] = Field(
         description="List of text snippets retrieved from search results."
     )
 
