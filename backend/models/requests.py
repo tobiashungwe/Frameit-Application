@@ -5,8 +5,15 @@ class ThemeRequest(BaseModel):
     theme: str
 
 
+class FileUpload(BaseModel):
+    filename: str
+    content: bytes
+
+
 class ActivityRequest(BaseModel):
     theme: str
-    activity_description: str
+    excerise: FileUpload
+    materials: list[str]
+    terrain: str
     selected_keywords: list[str]
     language: str = "en"

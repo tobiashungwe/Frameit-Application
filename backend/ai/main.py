@@ -3,8 +3,11 @@
 import asyncio
 import sys
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from unstract.llmwhisperer import LLMWhispererClientV2
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from pydantic_ai import Agent
+import os
 from backend.models import (
     ActivityRequest,
     SuggestionsResponse,
@@ -33,6 +36,19 @@ logfire.install_auto_tracing(
 # Dynamically add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
+
+# Retrieve API key from environment variable
+api_key = os.getenv("LLMWHISPERER_API_KEY")
+if not api_key:
+    raise ValueError(
+        "API key for LLMWhispererClientV2 is not set in environment variables."
+    )
+
+# Initialize the LLMWhispererClientV2 with the retrieved API key
+llm_client = LLMWhispererClientV2(
+    base_url="https://llmwhisperer-api.us-central.unstract.com/api/v2",
+    api_key="sequ6Qlik-Y17Gn7rgn9i2jvzXxQISg9E7NHC79OZoA",
+)
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -147,6 +163,42 @@ def health_check():
     """Health check endpoint to ensure the API is running."""
     logfire.info("Health check endpoint was called.")
     return {"status": "OK", "message": "API is up and running!"}
+
+
+# Directory where files will be stored
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+@app.post("/upload_activity/")
+async def upload_activity(file: UploadFile = File(...)):
+    try:
+        file_location = UPLOAD_DIR / file.filename
+        with open(file_location, "wb") as f:
+            f.write(await file.read())
+        logfire.info(f"File uploaded successfully: {file_location}")
+
+        # content = await file.read()
+        # # Process with LLMWhisperer
+        # print(content)
+        result = llm_client.whisper(file_path=file_location, wait_for_completion=True)
+        print(result)
+        extracted_text = result.get("extraction", {}).get("result_text", "")
+        if not extracted_text:
+            raise HTTPException(
+                status_code=500, detail="Failed to extract text from the document."
+            )
+        theme_remover_agent = Agent()
+        sanitized_content = await theme_remover_agent.run(
+            f"Remove any themes from the following content. Make sure to only provide the result! Content:{extracted_text}",
+            model="groq:llama-3.3-70b-versatile",
+        )
+        print(sanitized_content)
+
+        return {"sanitized_content": sanitized_content}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process file: {e}")
 
 
 # ------------------- CLI WORKFLOW ------------------- #

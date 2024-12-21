@@ -46,6 +46,7 @@ function App() {
   const [story, setStory] = useState(""); // Store the generated story
   const [isSearching, setIsSearching] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [sanitizedContent, setSanitizedContent] = useState("");
 
   const onDrop = (acceptedFiles) => setFile(acceptedFiles[0]);
 
@@ -59,6 +60,37 @@ function App() {
     i18n.changeLanguage(selectedLanguage);
     setLanguage(selectedLanguage);
   };
+
+  const handleUploadFile = async () => {
+    if (!file) {
+      alert(t("messages.select_file"));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:8000/upload_activity/", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSanitizedContent(data.sanitized_content);
+      } else {
+        const error = await response.json();
+        console.error("File upload error:", error);
+        alert(t("messages.upload_error"));
+      }
+    } catch (error) {
+      console.error("Unexpected error during upload:", error);
+      alert(t("messages.upload_error"));
+    }
+  };
+
+  
 
   const handleSearchTheme = async () => {
     if (!theme) return alert(t("messages.enter_theme"));
@@ -188,18 +220,22 @@ function App() {
               {file ? file.name : t("placeholders.drag_drop_file")}
             </Typography>
           </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUploadFile}
+            sx={{ mt: 2 }}
+          >
+            {t("labels.upload_process")}
+          </Button>
 
-          {/* <Box mt={4}>
-            <Typography variant="h6">{t("labels.activity_description")}</Typography>
-            <TextField
-              value={activityDescription}
-              onChange={(e) => setActivityDescription(e.target.value)}
-              label={t("placeholders.enter_activity_description")}
-              variant="outlined"
-              fullWidth
-              margin="normal"
-            />
-          </Box> */}
+          {sanitizedContent && (
+            <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
+              <Typography variant="h6">{t("labels.sanitized_content")}</Typography>
+              <Typography>{sanitizedContent.data}</Typography>
+            </Box>
+          )}
+
 
           <Box mt={4}>
             <Typography variant="h6">{t("labels.theme")}</Typography>
