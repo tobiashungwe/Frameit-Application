@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
+import DocumentViewer from "./components/DocumentViewer";
 
 const appTheme = createTheme({
   palette: {
@@ -42,7 +43,6 @@ function App() {
   const [groupCount, setGroupCount] = useState("");
   const [keywords, setKeywords] = useState([]); // Store keywords from Curator Agent
   const [selectedKeywords, setSelectedKeywords] = useState([]); // Store user-selected keywords
-  const [activityDescription, setActivityDescription] = useState(""); // Store the activity description
   const [story, setStory] = useState(""); // Store the generated story
   const [isSearching, setIsSearching] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -90,8 +90,6 @@ function App() {
     }
   };
 
-  
-
   const handleSearchTheme = async () => {
     if (!theme) return alert(t("messages.enter_theme"));
     setIsSearching(true);
@@ -130,7 +128,7 @@ function App() {
   const handleGenerateStory = async () => {
     if (
       !theme ||
-      !activityDescription ||
+      !file ||
       !groupCount ||
       !terrain ||
       !material ||
@@ -142,33 +140,45 @@ function App() {
 
     setIsGenerating(true);
 
-    //todo: Fix activity description with correct format, make sure to give it a good response!
-    try {
-      const response = await fetch("http://localhost:8000/generate_story", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          theme,
-          activity_description: `${activityDescription}, using ${material} in a ${terrain} for a ${groupCount}.`,
-          selected_keywords: selectedKeywords,
-          language,
-        }),
-      });
+    const fileReader = new FileReader();
+    fileReader.onload = async () => {
+      const exercise = {
+        filename: file.name,
+        content: sanitizedContent.data,
+      };
 
-      if (response.ok) {
-        const data = await response.json();
-        setStory(data.story);
-      } else {
-        const errorData = await response.json();
-        console.error("Error generating story:", errorData);
-        alert(`Error: ${errorData.detail}`);
+      try {
+        const response = await fetch("http://localhost:8000/generate_story", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            theme,
+            exercise,
+            materials: [material],
+            terrain,
+            selected_keywords: selectedKeywords,
+            language,
+            group_size: groupCount,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setStory(data.story);
+        } else {
+          const errorData = await response.json();
+          console.error("Error generating story:", errorData);
+          alert(`Error: ${errorData.detail}`);
+        }
+      } catch (error) {
+        console.error("Unexpected error:", error);
+        alert("An unexpected error occurred while generating the story.");
+      } finally {
+        setIsGenerating(false);
       }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      alert("An unexpected error occurred while generating the story.");
-    } finally {
-      setIsGenerating(false);
-    }
+    };
+
+    fileReader.readAsDataURL(file);
   };
 
   return (
@@ -215,6 +225,7 @@ function App() {
               "&:hover": { bgcolor: "#f5f5f5" },
             }}
           >
+            
             <input {...getInputProps()} />
             <Typography>
               {file ? file.name : t("placeholders.drag_drop_file")}
@@ -232,10 +243,14 @@ function App() {
           {sanitizedContent && (
             <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
               <Typography variant="h6">{t("labels.sanitized_content")}</Typography>
-              <Typography>{sanitizedContent.data}</Typography>
+              <Typography>
+                <DocumentViewer
+                  onChange={(e, value) => setSanitizedContent(value)}
+                  sanitizedContent={sanitizedContent.data}
+                />
+              </Typography>
             </Box>
           )}
-
 
           <Box mt={4}>
             <Typography variant="h6">{t("labels.theme")}</Typography>

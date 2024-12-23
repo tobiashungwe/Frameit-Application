@@ -23,8 +23,19 @@ class AdapterDependencies:
     """Dependencies for mapping objects to a theme."""
 
     theme: str
-    activity_description: str
+    exercise: str
     user_keywords: list[str]
+    materials: list[str]
+
+
+@dataclass
+class GeneratorDependencies:
+    """Dependencies for generating a story."""
+
+    theme: str
+    exercise: str
+    theme_details: str
+    object_mapping: str
 
 
 @dataclass

@@ -25,7 +25,13 @@ from backend.ai.agents import (
 )
 import logfire
 
-from backend.models.dependencies import ThemeDependencies
+from backend.models.dependencies import (
+    AdapterDependencies,
+    GeneratorDependencies,
+    ResearchDependencies,
+    ThemeDependencies,
+    TranslationDependencies,
+)
 
 # Configure Logfire before other imports
 logfire.configure()
@@ -113,42 +119,99 @@ async def generate_story(request: ActivityRequest):
     """
     with logfire.span("main:generate_story"):
         try:
-            logfire.info(f"Generating story for theme '{request.theme}'")
+            try:
+                logfire.info(
+                    f"Generating story for theme '{request.theme}' with file '{request.exercise.filename}"
+                )
 
-            # Research theme details
-            theme_details_result = await researcher_agent.run(
-                {"theme": request.theme, "user_keywords": request.selected_keywords}
-            )
+                # Fetch theme details
+                # Todo: add settings to configure if the agent should be used or not, this can be usefull for users if they want to save tokens
+                with logfire.span("researcher_agent:research_theme"):
+                    logfire.info("Research agent started job!")
+                    theme_details_result = await researcher_agent.run(
+                        "Research this!",
+                        deps=ResearchDependencies(
+                            theme=request.theme, user_keywords=request.selected_keywords
+                        ),
+                    )
+                    logfire.info(f"Theme details: {theme_details_result.data}")
+            except Exception as e:
+                logfire.error(f"Error fetching theme details: {e}")
+                raise HTTPException(
+                    status_code=500, detail="Failed to fetch theme details."
+                )
+            finally:
+                logfire.info("Theme details fetched successfully.")
+
             theme_details = theme_details_result.data
 
-            # Map objects in the activity
-            object_mapping_result = await adapter_agent.run(
-                {
-                    "theme": request.theme,
-                    "activity_description": request.activity_description,
-                    "user_keywords": request.selected_keywords,
-                }
-            )
+            try:
+                # Map objects in the activity
+                with logfire.span("adapter_agent:map_objects"):
+                    logfire.info("Adapter agent started job!")
+                    object_mapping_result = await adapter_agent.run(
+                        "Map objects",
+                        deps=AdapterDependencies(
+                            theme=request.theme,
+                            exercise=request.exercise.content,
+                            user_keywords=request.selected_keywords,
+                            materials=request.materials,
+                        ),
+                    )
+                    logfire.info(f"Object mapping: {object_mapping_result.data}")
+            except Exception as e:
+                logfire.error(f"Error mapping objects: {e}")
+                raise HTTPException(status_code=500, detail="Failed to map objects.")
+            finally:
+                logfire.info("Objects mapped successfully.")
+
             object_mapping = object_mapping_result.data
 
-            # Generate story
-            story_result = await generator_agent.run(
-                {
-                    "activity_description": request.activity_description,
-                    "theme_details": theme_details,
-                    "object_mapping": object_mapping,
-                }
-            )
+            try:
+                # Generate story
+                with logfire.span("generator_agent:create_story"):
+                    logfire.info("Generator agent started job!")
+                    story_result = await generator_agent.run(
+                        f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{request.exercise.content}', using the following keywords: {request.selected_keywords} in the story.",
+                        deps=GeneratorDependencies(
+                            theme=request.theme,
+                            exercise=request.exercise.content,
+                            theme_details=theme_details.details,
+                            object_mapping=object_mapping.object_mapping,
+                        ),
+                    )
+                    logfire.info(f"Generated story: {story_result.data}")
+            except Exception as e:
+                logfire.error(f"Error generating story: {e}")
+                raise HTTPException(status_code=500, detail="Failed to generate story.")
+            finally:
+                logfire.info("Story generated successfully.")
+
             story = story_result.data
 
-            # Translate story to user-selected language
-            translation_result = await translator_agent.run(
-                {"story": story, "target_language": request.language}
-            )
+            try:
+                # Translate story to user-selected language
+                with logfire.span("translator_agent:translate_story"):
+                    logfire.info("Translator agent started job!")
+                    translation_result = await translator_agent.run(
+                        "Translate the text accurately and naturally, preserving its meaning, tone, and cultural context.",
+                        deps=TranslationDependencies(
+                            story=story, target_language=request.language
+                        ),
+                    )
+                    logfire.info(f"Translated story: {translation_result.data}")
+            except Exception as e:
+                logfire.error(f"Error translating story: {e}")
+                raise HTTPException(
+                    status_code=500, detail="Failed to translate story."
+                )
+            finally:
+                logfire.info("Story translated successfully.")
+
             translated_story = translation_result.data
 
             logfire.info("Story generation completed successfully.")
-            return StoryResponse(story=translated_story)
+            return StoryResponse(story=translated_story.translated_text)
 
         except Exception as e:
             logfire.error(f"Error generating story: {e}")
@@ -178,11 +241,9 @@ async def upload_activity(file: UploadFile = File(...)):
             f.write(await file.read())
         logfire.info(f"File uploaded successfully: {file_location}")
 
-        # content = await file.read()
-        # # Process with LLMWhisperer
-        # print(content)
         result = llm_client.whisper(file_path=file_location, wait_for_completion=True)
-        print(result)
+        logfire.info("LLMWhisperer processing completed.")
+
         extracted_text = result.get("extraction", {}).get("result_text", "")
         if not extracted_text:
             raise HTTPException(
@@ -193,7 +254,7 @@ async def upload_activity(file: UploadFile = File(...)):
             f"Remove any themes from the following content. Make sure to only provide the result! Content:{extracted_text}",
             model="groq:llama-3.3-70b-versatile",
         )
-        print(sanitized_content)
+        logfire.info("Content sanitized successfully.")
 
         return {"sanitized_content": sanitized_content}
 

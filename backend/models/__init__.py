@@ -3,10 +3,17 @@ from .dependencies import (
     TranslationDependencies,
     ResearchDependencies,
     AdapterDependencies,
+    GeneratorDependencies,
 )
-from .result_models import SearchResult, ThemeResult
+from .result_models import SearchResult, ThemeResult, TranslationResult
 from .requests import ThemeRequest, ActivityRequest
-from .responses import SuggestionsResponse, KeywordsResponse, StoryResponse
+from .responses import (
+    SuggestionsResponse,
+    KeywordsResponse,
+    StoryResponse,
+    ResearchResponse,
+    AdapterResponse,
+)
 
 __all__ = [
     "ThemeDependencies",
@@ -20,4 +27,8 @@ __all__ = [
     "ResearchDependencies",
     "AdapterDependencies",
     "TranslationDependencies",
+    "ResearchResponse",
+    "AdapterResponse",
+    "GeneratorDependencies",
+    "TranslationResult",
 ]
