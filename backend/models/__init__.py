@@ -6,7 +6,7 @@ from .dependencies import (
     GeneratorDependencies,
 )
 from .result_models import SearchResult, ThemeResult, TranslationResult
-from .requests import ThemeRequest, ActivityRequest
+from .requests import ThemeRequest, FileUpload, ActivityRequest
 from .responses import (
     SuggestionsResponse,
     KeywordsResponse,
@@ -17,18 +17,19 @@ from .responses import (
 
 __all__ = [
     "ThemeDependencies",
-    "SearchResult",
-    "ThemeResult",
-    "SuggestionsResponse",
-    "KeywordsResponse",
-    "ThemeRequest",
-    "ActivityRequest",
-    "StoryResponse",
+    "TranslationDependencies",
     "ResearchDependencies",
     "AdapterDependencies",
-    "TranslationDependencies",
+    "GeneratorDependencies",
+    "SearchResult",
+    "ThemeResult",
+    "TranslationResult",
+    "ThemeRequest",
+    "FileUpload",
+    "ActivityRequest",
+    "SuggestionsResponse",
+    "KeywordsResponse",
+    "StoryResponse",
     "ResearchResponse",
     "AdapterResponse",
-    "GeneratorDependencies",
-    "TranslationResult",
 ]
