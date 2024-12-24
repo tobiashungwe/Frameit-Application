@@ -15,7 +15,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "../node_modules/react-i18next";
 import DocumentViewer from "./components/DocumentViewer";
 
 const appTheme = createTheme({
