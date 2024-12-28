@@ -15,7 +15,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import { useTranslation } from "../node_modules/react-i18next";
+import { useTranslation } from "react-i18next";
 import DocumentViewer from "./components/DocumentViewer";
 
 const appTheme = createTheme({
@@ -71,7 +71,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/upload_activity/", {
+      const response = await fetch("http://localhost:8000/api/stories/upload_activity/", {
         method: "POST",
         body: formData,
       });
@@ -95,7 +95,7 @@ function App() {
     setIsSearching(true);
 
     try {
-      const response = await fetch("http://localhost:8000/generate_keywords", {
+      const response = await fetch("http://localhost:8000/api/stories/generate_keywords", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme }),
@@ -148,7 +148,7 @@ function App() {
       };
 
       try {
-        const response = await fetch("http://localhost:8000/generate_story", {
+        const response = await fetch("http://localhost:8000/api/stories/generate_story", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
