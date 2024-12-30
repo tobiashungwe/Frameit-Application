@@ -1,6 +1,6 @@
 import mysql.connector
 from backend.core.config import Config
-from backend.domain.models.theme import Theme
+from backend.domain.models.theme import ThemeEntity
 
 
 class ThemeRepository:
@@ -21,7 +21,7 @@ class ThemeRepository:
         conn = self._get_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT id, name FROM themes")
-        themes = [Theme(row["id"], row["name"]) for row in cursor.fetchall()]
+        themes = [ThemeEntity(row["id"], row["name"]) for row in cursor.fetchall()]
         cursor.close()
         return themes
 
