@@ -3,37 +3,32 @@ from backend.infrastructure.models import EditorDependencies
 import logfire
 
 from backend.core.model_config import ModelConfig
+from backend.application.services.prompt_service import PromptService
 
 logfire.configure()
 
 
-# TODO: editor agent: Can edit specific lines of text that was generarated (Nice to have)
-# Define the Editor Agent
-editor_agent = Agent(
-    model=ModelConfig.DEFAULT_MODEL,
-    deps_type=EditorDependencies,
-    system_prompt="You are a professional content editor. Refine and improve the following story "
-    "to ensure it is engaging, cohesive, and free of errors. "
-    "Fix grammar, improve clarity, and enhance flow while preserving the original meaning.",
-)
+class EditorAgent:
+    def __init__(self, db):
+        self.prompt_service = PromptService(db)
 
+        static_prompt = self.prompt_service.get_prompt_template("editor_agent_static")
 
-@editor_agent.tool
-async def refine_story(ctx: RunContext[EditorDependencies]) -> str:
-    """
-    Tool to refine and polish a story for grammar, clarity, and readability.
-    Args:
-        story (str): The raw story text that needs refinement.
-
-    Returns:
-        str: The refined and polished story.
-    """
-    with logfire.span("editor_agent:refine_story"):
-        logfire.info("Refining story for grammar, clarity, and structure.")
-        # Run the editor tool
-        response = await ctx.agent.run(
-            f"Refine and improve the following story:\n\n{ctx.deps.story}"
+        self.agent = Agent(
+            model=ModelConfig.DEFAULT_MODEL,
+            deps_type=EditorDependencies,
+            system_prompt=static_prompt,
         )
-        refined_story = response.data.strip()
-        logfire.info("Story refinement completed successfully.")
-        return refined_story
+
+        @self.agent.system_prompt
+        def refine_story(ctx: RunContext[EditorDependencies]) -> str:
+            """Refine and polish a story for grammar, clarity, and readability."""
+            with logfire.span("editor_agent:refine_story"):
+                logfire.info("Refining story for grammar, clarity, and structure.")
+                return self.prompt_service.generate_dynamic_prompt(
+                    name="editor_agent_dynamic",
+                    story=ctx.deps.story,
+                )
+
+
+# TODO: editor agent: Can edit specific lines of text that was generarated (Nice to have)

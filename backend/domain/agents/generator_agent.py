@@ -3,30 +3,40 @@ from backend.infrastructure.models import ThemeResult
 import logfire
 from backend.infrastructure.models import GeneratorDependencies
 from backend.core.model_config import ModelConfig
+from backend.application.services.prompt_service import PromptService
 
 logfire.configure()
 
 
-generator_agent = Agent(
-    model=ModelConfig.DEFAULT_MODEL,
-    deps_type=GeneratorDependencies,
-    result_type=ThemeResult,
-    retries=3,
-    system_prompt="Generate a story based on the given theme and activity.",
-)
+class GeneratorAgent:
+    def __init__(self, db):
+        self.prompt_service = PromptService(db)
 
+        static_prompt = self.prompt_service.get_prompt_template(
+            "generator_agent_static"
+        )
 
-@generator_agent.system_prompt
-async def create_story(ctx: RunContext[GeneratorDependencies]) -> str:
-    logfire.info(
-        f"Generator Agent: Creating story for theme '{ctx.deps.theme}' and activity '{ctx.deps.exercise}'"
-    )
-    return generate_multimove_story_prompt(
-        ctx.deps.theme,
-        ctx.deps.theme_details,
-        ctx.deps.exercise,
-        ctx.deps.object_mapping,
-    )
+        self.agent = Agent(
+            model=ModelConfig.DEFAULT_MODEL,
+            deps_type=GeneratorDependencies,
+            result_type=ThemeResult,
+            retries=3,
+            system_prompt=static_prompt,
+        )
+
+        @self.agent.system_prompt
+        def create_story(ctx: RunContext[GeneratorDependencies]) -> str:
+            """Generate a story based on the given theme and activity."""
+            with logfire.span("generator_agent:create_story"):
+                logfire.info(
+                    f"Generating story for theme: '{ctx.deps.theme}' and activity: '{ctx.deps.exercise}'"
+                )
+                return generate_multimove_story_prompt(
+                    ctx.deps.theme,
+                    ctx.deps.theme_details,
+                    ctx.deps.exercise,
+                    ctx.deps.object_mapping,
+                )
 
 
 def generate_multimove_story_prompt(

@@ -6,13 +6,8 @@ from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
-
 from backend.core.database import Base, engine
-from backend.infrastructure.controllers import (
-    agent_controller,
-    theme_controller,
-    story_controller,
-)
+from backend.infrastructure.controllers import theme_controller, story_controller
 
 # Create all DB tables on startup (if you prefer)
 Base.metadata.create_all(bind=engine)
@@ -48,7 +43,6 @@ if static_dir.exists():
 
 
 # Include your controllers/routers
-app.include_router(agent_controller.router, prefix="/api/agents", tags=["Agents"])
 app.include_router(theme_controller.router, prefix="/api/themes", tags=["Themes"])
 app.include_router(story_controller.router, prefix="/api/stories", tags=["Stories"])
 

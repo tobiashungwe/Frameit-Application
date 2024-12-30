@@ -2,6 +2,7 @@ import requests
 from pydantic_ai import Agent, RunContext
 from backend.infrastructure.models import ThemeDependencies, SearchResult
 from backend.core.model_config import ModelConfig
+from backend.application.services.prompt_service import PromptService
 import logfire
 
 logfire.configure()
@@ -32,20 +33,25 @@ class BraveSearch:
         response.raise_for_status()
 
 
-search_agent = Agent(
-    ModelConfig.DEFAULT_MODEL,
-    deps_type=ThemeDependencies,
-    result_type=SearchResult,
-    system_prompt="Fetch and summarize relevant information about '{theme}'.",
-)
+class SearchAgent:
+    def __init__(self, db):
+        self.prompt_service = PromptService(db)
 
+        static_prompt = self.prompt_service.get_prompt_template("search_agent_static")
 
-@search_agent.tool
-async def fetch_theme_info(ctx: RunContext[ThemeDependencies]) -> list:
-    logfire.info(f"Search Agent: Fetching theme info for '{ctx.deps.theme}'")
-    brave = BraveSearch()
-    results = brave.search(ctx.deps.theme)
-    logfire.info(
-        f"Search Agent: Retrieved {len(results)} results for theme '{ctx.deps.theme}'"
-    )
-    return results
+        self.agent = Agent(
+            model=ModelConfig.DEFAULT_MODEL,
+            deps_type=ThemeDependencies,
+            result_type=SearchResult,
+            system_prompt=static_prompt,
+        )
+
+        @self.agent.tool
+        async def fetch_theme_info(ctx: RunContext[ThemeDependencies]) -> list:
+            logfire.info(f"Search Agent: Fetching theme info for '{ctx.deps.theme}'")
+            brave = BraveSearch()
+            results = brave.search(ctx.deps.theme)
+            logfire.info(
+                f"Search Agent: Retrieved {len(results)} results for theme '{ctx.deps.theme}'"
+            )
+            return results

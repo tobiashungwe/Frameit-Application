@@ -1,24 +1,22 @@
-from .curator_agent import curator_agent
-from .researcher_agent import researcher_agent
-from .adapter_agent import adapter_agent
-from .generator_agent import generator_agent
-from .search_agent import search_agent
-from .keyword_agent import keyword_agent
-from .editor_agent import editor_agent
-from .translator_agent import translator_agent
-from .agent_models import AgentEntity
-from .theme_remover_agent import theme_remover_agent
+from .curator_agent import CuratorAgent
+from .researcher_agent import ResearchAgent
+from .adapter_agent import AdapterAgent
+from .generator_agent import GeneratorAgent
+from .search_agent import SearchAgent
+from .keyword_agent import KeywordAgent
+from .editor_agent import EditorAgent
+from .translator_agent import TranslatorAgent
+from .theme_remover_agent import ThemeRemoverAgent
 
 
 __all__ = [
-    "curator_agent",
-    "researcher_agent",
-    "adapter_agent",
-    "generator_agent",
-    "search_agent",
-    "keyword_agent",
-    "editor_agent",
-    "translator_agent",
-    "AgentEntity",
-    "theme_remover_agent",
+    "CuratorAgent",
+    "ResearchAgent",
+    "AdapterAgent",
+    "GeneratorAgent",
+    "SearchAgent",
+    "KeywordAgent",
+    "EditorAgent",
+    "TranslatorAgent",
+    "ThemeRemoverAgent",
 ]

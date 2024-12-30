@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, File, UploadFile
+from fastapi import APIRouter, HTTPException, File, UploadFile, Depends
 
 # from backend.application.services.agent_service import AgentService
 # TODO: Integerate with the database and the agent service make sure database is running and working with the agent service
 # TODO: Change the agents to be more generic by creating a generic agent class and then creating specific agents that inherit from the generic agent class
 
+from backend.core.database import get_db_session
+from sqlalchemy.orm import Session
 from backend.infrastructure.models.dependencies import (
     ThemeDependencies,
     ResearchDependencies,
@@ -18,13 +20,13 @@ from backend.infrastructure.models import (
     SuggestionsResponse,
 )
 from backend.domain.agents import (
-    keyword_agent,
-    search_agent,
-    researcher_agent,
-    adapter_agent,
-    generator_agent,
-    theme_remover_agent,
-    translator_agent,
+    KeywordAgent,
+    SearchAgent,
+    ResearchAgent,
+    AdapterAgent,
+    GeneratorAgent,
+    ThemeRemoverAgent,
+    TranslatorAgent,
 )
 import logfire
 from pathlib import Path
@@ -56,14 +58,19 @@ router = APIRouter()
 
 
 @router.post("/generate_keywords", response_model=SuggestionsResponse)
-async def generate_keywords(request: ThemeRequest):
+async def generate_keywords(
+    request: ThemeRequest, db: Session = Depends(get_db_session)
+):
     """
     Generate standalone keywords for a theme using Keyword Agent.
     If no valid keywords are found, use Search Agent (Brave API) for fallback.
     """
     themeDepends = ThemeDependencies(theme=request.theme)
     try:
-        result = await keyword_agent.run(
+        # Initialize agents
+        keyword_agent = KeywordAgent(db)
+        search_agent = SearchAgent(db)
+        result = await keyword_agent.agent.run(
             f'You are an expert in popular culture references. Given the theme: "{request.theme}"'
         )
         keywords = result.data
@@ -73,7 +80,7 @@ async def generate_keywords(request: ThemeRequest):
             logfire.warning(
                 "No valid keywords found. Invoking Search Agent as fallback."
             )
-            results = await search_agent.run(
+            results = await search_agent.agent.run(
                 "Fetch theme information", deps=themeDepends
             )
             keywords = results[:10]  # Limit results from Brave Search API
@@ -93,12 +100,20 @@ async def generate_keywords(request: ThemeRequest):
 
 
 @router.post("/generate_story", response_model=StoryResponse)
-async def generate_story(request: ActivityRequest):
+async def generate_story(
+    request: ActivityRequest, db: Session = Depends(get_db_session)
+):
     """
     Generate a story using selected keywords and theme details.
     """
     with logfire.span("main:generate_story"):
         try:
+            # Initialize agents
+            researcher_agent = ResearchAgent(db)
+            adapter_agent = AdapterAgent(db)
+            generator_agent = GeneratorAgent(db)
+            translator_agent = TranslatorAgent(db)
+
             try:
                 logfire.info(
                     f"Generating story for theme '{request.theme}' with file '{request.exercise.filename}"
@@ -108,7 +123,7 @@ async def generate_story(request: ActivityRequest):
                 # TODO: add settings to configure if the agent should be used or not, this can be usefull for users if they want to save tokens
                 with logfire.span("researcher_agent:research_theme"):
                     logfire.info("Research agent started job!")
-                    theme_details_result = await researcher_agent.run(
+                    theme_details_result = await researcher_agent.agent.run(
                         "Research this!",
                         deps=ResearchDependencies(
                             theme=request.theme, user_keywords=request.selected_keywords
@@ -129,7 +144,7 @@ async def generate_story(request: ActivityRequest):
                 # Map objects in the activity
                 with logfire.span("adapter_agent:map_objects"):
                     logfire.info("Adapter agent started job!")
-                    object_mapping_result = await adapter_agent.run(
+                    object_mapping_result = await adapter_agent.agent.run(
                         "Map objects",
                         deps=AdapterDependencies(
                             theme=request.theme,
@@ -151,7 +166,7 @@ async def generate_story(request: ActivityRequest):
                 # Generate story
                 with logfire.span("generator_agent:create_story"):
                     logfire.info("Generator agent started job!")
-                    story_result = await generator_agent.run(
+                    story_result = await generator_agent.agent.run(
                         f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{request.exercise.content}', using the following keywords: {request.selected_keywords} in the story.",
                         deps=GeneratorDependencies(
                             theme=request.theme,
@@ -173,7 +188,7 @@ async def generate_story(request: ActivityRequest):
                 # Translate story to user-selected language
                 with logfire.span("translator_agent:translate_story"):
                     logfire.info("Translator agent started job!")
-                    translation_result = await translator_agent.run(
+                    translation_result = await translator_agent.agent.run(
                         "Translate the text accurately and naturally, preserving its meaning, tone, and cultural context.",
                         deps=TranslationDependencies(
                             story=story, target_language=request.language
@@ -204,8 +219,13 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @router.post("/upload_activity/")
-async def upload_activity(file: UploadFile = File(...)):
+async def upload_activity(
+    file: UploadFile = File(...), db: Session = Depends(get_db_session)
+):
     try:
+        # Initialize agents
+        theme_remover_agent = ThemeRemoverAgent(db)
+
         file_location = UPLOAD_DIR / file.filename
         with open(file_location, "wb") as f:
             f.write(await file.read())
@@ -220,7 +240,7 @@ async def upload_activity(file: UploadFile = File(...)):
                 status_code=500, detail="Failed to extract text from the document."
             )
 
-        sanitized_content = await theme_remover_agent.run(
+        sanitized_content = await theme_remover_agent.agent.run(
             f"Remove any themes from the following content. Content:{extracted_text}"
         )
         logfire.info("Content sanitized successfully.")
