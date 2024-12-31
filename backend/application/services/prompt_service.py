@@ -3,6 +3,11 @@ from backend.infrastructure.repositories.prompt_repository import PromptReposito
 
 
 class PromptService:
+    """
+    Service class for managing prompts using the PromptRepository.
+    This ensures that the prompts are more maintainable and easier to manage.
+    """
+
     def __init__(self, db: Session):
         self.db = db
 
