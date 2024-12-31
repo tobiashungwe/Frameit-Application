@@ -35,7 +35,7 @@ from unstract.llmwhisperer import LLMWhispererClientV2
 from dotenv import load_dotenv
 
 
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 
 # Retrieve API key from environment variable
@@ -48,7 +48,7 @@ if not api_key:
 # Initialize the LLMWhispererClientV2 with the retrieved API key
 llm_client = LLMWhispererClientV2(
     base_url="https://llmwhisperer-api.us-central.unstract.com/api/v2",
-    api_key="sequ6Qlik-Y17Gn7rgn9i2jvzXxQISg9E7NHC79OZoA",
+    api_key=api_key,
 )
 
 

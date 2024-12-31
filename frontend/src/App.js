@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ThemeProvider,
   createTheme,
@@ -15,7 +15,8 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
-import { useTranslation } from "react-i18next";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 import DocumentViewer from "./components/DocumentViewer";
 
 const appTheme = createTheme({
@@ -28,13 +29,32 @@ const appTheme = createTheme({
   },
 });
 
+const fetchTranslations = async (language) => {
+  try {
+    const response = await fetch(`http://localhost:8000/api/translations/${language}`);
+    if (!response.ok) {
+      throw new Error("Failed to load translations");
+    }
+    const data = await response.json();
+    return data.translations;
+  } catch (error) {
+    console.error("Error fetching translations:", error);
+    return {};
+  }
+};
+
+i18n
+  .use(initReactI18next)
+  .init({
+    fallbackLng: "nl",
+    interpolation: { escapeValue: false },
+  });
+
 const staticMaterials = ["Hoops", "Balls", "Cones", "Mats", "Tunnels"];
 const staticTerrains = ["Indoor Gym", "Grass Field", "Playground", "Beach"];
 const staticGroups = ["Small Group", "Medium Group", "Large Group"];
 
 function App() {
-  const { t, i18n } = useTranslation();
-
   const [language, setLanguage] = useState("nl");
   const [file, setFile] = useState(null);
   const [theme, setTheme] = useState("");
@@ -48,6 +68,16 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [sanitizedContent, setSanitizedContent] = useState("");
 
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translations = await fetchTranslations(language);
+      i18n.addResourceBundle(language, "translation", translations, true, true);
+      i18n.changeLanguage(language);
+    };
+    loadTranslations();
+  }, [language]);
+
   const onDrop = (acceptedFiles) => setFile(acceptedFiles[0]);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -55,15 +85,30 @@ function App() {
     accept: ".txt, .pdf, .doc, .docx",
   });
 
-  const handleLanguageChange = (event) => {
+  const handleLanguageChange = async (event) => {
     const selectedLanguage = event.target.value;
-    i18n.changeLanguage(selectedLanguage);
-    setLanguage(selectedLanguage);
+  
+    try {
+      // Fetch translations for the selected language
+      const translations = await fetchTranslations(selectedLanguage);
+  
+      // Add translations to i18n
+      i18n.addResourceBundle(selectedLanguage, "translation", translations, true, true);
+  
+      // Change the language in i18n
+      await i18n.changeLanguage(selectedLanguage);
+  
+      // Update the state after the language is set in i18n
+      setLanguage(selectedLanguage);
+    } catch (error) {
+      console.error("Error changing language:", error);
+      alert("Failed to load translations for the selected language.");
+    }
   };
 
   const handleUploadFile = async () => {
     if (!file) {
-      alert(t("messages.select_file"));
+      alert(i18n.t("messages.select_file"));
       return;
     }
 
@@ -82,16 +127,16 @@ function App() {
       } else {
         const error = await response.json();
         console.error("File upload error:", error);
-        alert(t("messages.upload_error"));
+        alert(i18n.t("messages.upload_error"));
       }
     } catch (error) {
       console.error("Unexpected error during upload:", error);
-      alert(t("messages.upload_error"));
+      alert(i18n.t("messages.upload_error"));
     }
   };
 
   const handleSearchTheme = async () => {
-    if (!theme) return alert(t("messages.enter_theme"));
+    if (!theme) return alert(i18n.t("messages.enter_theme"));
     setIsSearching(true);
 
     try {
@@ -107,11 +152,11 @@ function App() {
         setKeywords(data.suggestions);
       } else {
         console.error("Unexpected keywords format:", data);
-        alert(t("messages.no_keywords_found"));
+        alert(i18n.t("messages.no_keywords_found"));
       }
     } catch (error) {
       console.error("Error fetching keywords:", error);
-      alert(t("messages.error_fetching_theme"));
+      alert(i18n.t("messages.error_fetching_theme"));
     } finally {
       setIsSearching(false);
     }
@@ -134,7 +179,7 @@ function App() {
       !material ||
       selectedKeywords.length === 0
     ) {
-      alert(t("messages.all_fields_required"));
+      alert(i18n.t("messages.all_fields_required"));
       return;
     }
 
@@ -198,7 +243,7 @@ function App() {
               select
               value={language}
               onChange={handleLanguageChange}
-              label={t("labels.language")}
+              label={i18n.t("labels.language")}
               variant="outlined"
               size="small"
             >
@@ -211,7 +256,7 @@ function App() {
           </Grid>
 
           <Typography variant="h5" align="center" gutterBottom>
-            {t("labels.upload_exercise")}
+            {i18n.t("labels.upload_exercise")}
           </Typography>
           <Box
             {...getRootProps()}
@@ -228,7 +273,7 @@ function App() {
             
             <input {...getInputProps()} />
             <Typography>
-              {file ? file.name : t("placeholders.drag_drop_file")}
+              {file ? file.name : i18n.t("placeholders.drag_drop_file")}
             </Typography>
           </Box>
           <Button
@@ -237,12 +282,12 @@ function App() {
             onClick={handleUploadFile}
             sx={{ mt: 2 }}
           >
-            {t("labels.upload_process")}
+            {i18n.t("labels.upload_process")}
           </Button>
 
           {sanitizedContent && (
             <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
-              <Typography variant="h6">{t("labels.sanitized_content")}</Typography>
+              <Typography variant="h6">{i18n.t("labels.sanitized_content")}</Typography>
               <Typography>
                 <DocumentViewer
                   onChange={(e, value) => setSanitizedContent(value)}
@@ -253,15 +298,15 @@ function App() {
           )}
 
           <Box mt={4}>
-            <Typography variant="h6">{t("labels.theme")}</Typography>
+            <Typography variant="h6">{i18n.t("labels.theme")}</Typography>
             <Autocomplete
-              options={t("options.themes", { returnObjects: true })}
+              options={i18n.t("options.themes", { returnObjects: true })}
               freeSolo
               onInputChange={(e, value) => setTheme(value)}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label={t("placeholders.select_theme")}
+                  label={i18n.t("placeholders.select_theme")}
                   variant="outlined"
                   fullWidth
                 />
@@ -274,13 +319,13 @@ function App() {
               sx={{ mt: 2 }}
               disabled={isSearching}
             >
-              {isSearching ? <CircularProgress size={24} /> : t("labels.search")}
+              {isSearching ? <CircularProgress size={24} /> : i18n.t("labels.search")}
             </Button>
           </Box>
 
           {keywords.length > 0 && (
             <Box mt={4}>
-              <Typography variant="h6">{t("labels.generated_keywords")}</Typography>
+              <Typography variant="h6">{i18n.t("labels.generated_keywords")}</Typography>
               <Grid container spacing={2}>
                 {keywords.map((keyword, index) => (
                   <Grid item xs={4} key={index}>
@@ -301,12 +346,12 @@ function App() {
 
           <Grid container spacing={2} mt={2}>
             <Grid item xs={6}>
-              <Typography variant="h6">{t("labels.groups")}</Typography>
+              <Typography variant="h6">{i18n.t("labels.groups")}</Typography>
               <TextField
                 select
                 value={groupCount}
                 onChange={(e) => setGroupCount(e.target.value)}
-                label={t("placeholders.select_groups")}
+                label={i18n.t("placeholders.select_groups")}
                 fullWidth
               >
                 {staticGroups.map((group) => (
@@ -317,12 +362,12 @@ function App() {
               </TextField>
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="h6">{t("labels.terrain")}</Typography>
+              <Typography variant="h6">{i18n.t("labels.terrain")}</Typography>
               <TextField
                 select
                 value={terrain}
                 onChange={(e) => setTerrain(e.target.value)}
-                label={t("placeholders.select_terrain")}
+                label={i18n.t("placeholders.select_terrain")}
                 fullWidth
               >
                 {staticTerrains.map((terrain) => (
@@ -335,12 +380,12 @@ function App() {
           </Grid>
 
           <Box mt={2}>
-            <Typography variant="h6">{t("labels.materials")}</Typography>
+            <Typography variant="h6">{i18n.t("labels.materials")}</Typography>
             <TextField
               select
               value={material}
               onChange={(e) => setMaterial(e.target.value)}
-              label={t("placeholders.select_material")}
+              label={i18n.t("placeholders.select_material")}
               fullWidth
             >
               {staticMaterials.map((mat) => (
@@ -359,13 +404,13 @@ function App() {
               disabled={isGenerating}
               fullWidth
             >
-              {isGenerating ? <CircularProgress size={24} /> : t("labels.generate_story")}
+              {isGenerating ? <CircularProgress size={24} /> : i18n.t("labels.generate_story")}
             </Button>
           </Box>
 
           {story && (
             <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
-              <Typography variant="h6">{t("labels.generated_story")}</Typography>
+              <Typography variant="h6">{i18n.t("labels.generated_story")}</Typography>
               <Typography>{story}</Typography>
             </Box>
           )}
