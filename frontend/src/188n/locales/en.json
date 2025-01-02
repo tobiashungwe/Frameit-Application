@@ -8,26 +8,28 @@
     "groups": "Groups",
     "terrain": "Terrain",
     "materials": "Materials",
-    "generated_keywords": "Generated Keywords"
-  },
-  "messages": {
-    "enter_theme": "Enter a theme to search.",
-    "processing_inputs": "Processing with these inputs:",
-    "theme_found_locally": "Theme found locally:",
-    "theme_not_found": "Theme not found locally. Searching for more details about:",
-    "all_fields_required": "All fields are required!"
+    "generated_keywords": "Generated Keywords",
+    "upload_process": "Upload and Process",
+    "sanitized_content": "Sanitized Content",
+    "generated_story": "Generated Story"
   },
   "placeholders": {
+    "drag_drop_file": "Drag 'n' drop a file here, or click to select one",
     "select_theme": "Search or select a theme",
     "select_material": "Select material",
     "select_groups": "Select number of groups",
-    "select_terrain": "Select terrain",
-    "drag_drop_file": "Drag 'n' drop a file here, or click to select one"
+    "select_terrain": "Select terrain"
+  },
+  "messages": {
+    "enter_theme": "Enter a theme to search.",
+    "all_fields_required": "All fields are required!",
+    "upload_error": "Error uploading the file.",
+    "no_keywords_found": "No keywords found.",
+    "error_fetching_theme": "Error fetching theme details."
   },
   "options": {
     "themes": ["Mario", "Minions", "Christmas", "Brawl Stars"],
     "materials": ["Hoops", "Balls", "Cones", "Mats", "Tunnels"],
-    "terrains": ["Indoor Gym", "Grass Field", "Playground", "Beach"],
-    "groups": ["1", "2", "3", "4"]
+    "terrains": ["Indoor Gym", "Grass Field", "Playground", "Beach"]
   }
 }

@@ -8,26 +8,28 @@
     "groups": "Groepen",
     "terrain": "Terrein",
     "materials": "Materiaal",
-    "generated_keywords": "Gegenereerde trefwoorden"
-  },
-  "messages": {
-    "enter_theme": "Voer een thema in om te zoeken.",
-    "processing_inputs": "Verwerken met deze invoer:",
-    "theme_found_locally": "Thema lokaal gevonden:",
-    "theme_not_found": "Thema niet lokaal gevonden. Zoeken naar meer details over:",
-    "all_fields_required": "Alle velden zijn verplicht!"
+    "generated_keywords": "Gegenereerde trefwoorden",
+    "upload_process": "Upload en Verwerken",
+    "sanitized_content": "Gesaniteerd Inhoud",
+    "generated_story": "Gegenereerd Verhaal"
   },
   "placeholders": {
+    "drag_drop_file": "Sleep een bestand hierheen of klik om er een te selecteren",
     "select_theme": "Zoek of selecteer een thema",
     "select_material": "Selecteer materiaal",
     "select_groups": "Selecteer aantal groepen",
-    "select_terrain": "Selecteer terrein",
-    "drag_drop_file": "Sleep een bestand hierheen of klik om er een te selecteren"
+    "select_terrain": "Selecteer terrein"
+  },
+  "messages": {
+    "enter_theme": "Voer een thema in om te zoeken.",
+    "all_fields_required": "Alle velden zijn verplicht!",
+    "upload_error": "Fout bij het uploaden van het bestand.",
+    "no_keywords_found": "Geen trefwoorden gevonden.",
+    "error_fetching_theme": "Fout bij het ophalen van thema-details."
   },
   "options": {
     "themes": ["Mario", "Minions", "Kerstmis", "Brawl Stars"],
     "materials": ["Hoepels", "Ballen", "Kegels", "Matten", "Tunnels"],
-    "terrains": ["Gymzaal", "Grasveld", "Speelplaats", "Strand"],
-    "groups": ["1", "2", "3", "4"]
+    "terrains": ["Gymzaal", "Grasveld", "Speelplaats", "Strand"]
   }
 }

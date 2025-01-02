@@ -18,6 +18,7 @@ import { useDropzone } from "react-dropzone";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import DocumentViewer from "./components/DocumentViewer";
+import { useTranslation } from "react-i18next";
 
 const appTheme = createTheme({
   palette: {
@@ -53,9 +54,11 @@ i18n
 const staticMaterials = ["Hoops", "Balls", "Cones", "Mats", "Tunnels"];
 const staticTerrains = ["Indoor Gym", "Grass Field", "Playground", "Beach"];
 const staticGroups = ["Small Group", "Medium Group", "Large Group"];
+const defaultLanguage = "nl";
 
 function App() {
-  const [language, setLanguage] = useState("nl");
+  const { t } = useTranslation();
+  const [language, setLanguage] = useState(defaultLanguage);
   const [file, setFile] = useState(null);
   const [theme, setTheme] = useState("");
   const [material, setMaterial] = useState("");
@@ -70,12 +73,7 @@ function App() {
 
 
   useEffect(() => {
-    const loadTranslations = async () => {
-      const translations = await fetchTranslations(language);
-      i18n.addResourceBundle(language, "translation", translations, true, true);
-      i18n.changeLanguage(language);
-    };
-    loadTranslations();
+    loadLanguage(language); // Default language on load
   }, [language]);
 
   const onDrop = (acceptedFiles) => setFile(acceptedFiles[0]);
@@ -85,25 +83,21 @@ function App() {
     accept: ".txt, .pdf, .doc, .docx",
   });
 
+
+  const loadLanguage = async (lang) => {
+    try {
+      const translations = await fetchTranslations(lang);
+      i18n.addResourceBundle(lang, "translation", translations, true, true);
+      await i18n.changeLanguage(lang);
+      setLanguage(lang);
+    } catch (error) {
+      console.error("Error loading language:", error);
+    }
+  };
+
   const handleLanguageChange = async (event) => {
     const selectedLanguage = event.target.value;
-  
-    try {
-      // Fetch translations for the selected language
-      const translations = await fetchTranslations(selectedLanguage);
-  
-      // Add translations to i18n
-      i18n.addResourceBundle(selectedLanguage, "translation", translations, true, true);
-  
-      // Change the language in i18n
-      await i18n.changeLanguage(selectedLanguage);
-  
-      // Update the state after the language is set in i18n
-      setLanguage(selectedLanguage);
-    } catch (error) {
-      console.error("Error changing language:", error);
-      alert("Failed to load translations for the selected language.");
-    }
+    setLanguage(selectedLanguage);
   };
 
   const handleUploadFile = async () => {
