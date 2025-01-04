@@ -16,6 +16,12 @@ pipenv/
 backend/API/venv/
 backend/API/env/
 
+backend/venv/
+backend/env/
+
+
+
+
 # Node modules directories
 node_modules/
 **/node_modules/
@@ -34,6 +40,11 @@ Thumbs.db
 .idea/
 *.sublime-project
 *.sublime-workspace
+
+#AI 
+backend/model_output/checkpoint-264/model.safetensors
+backend/model_output/checkpoint-264/optimizer.pt
+backend/model_output/fine_tuned_gpt2/model.safetensors
 
 # Build directories
 build/
@@ -94,3 +105,11 @@ frontend/*.cache
 # Node modules
 node_modules/
 **/node_modules/
+
+#model output
+backend/model_output/*
+
+backend/offload/
+*.dat
+*.pth
+backend/model_output/checkpoint-264/rng_state.pth
