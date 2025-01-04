@@ -1,58 +1,60 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 from typing import List
 from backend.application.services.theme_service import ThemeService
+from backend.core.database import get_db_session
 
-# TODO: Make sure to use ThemeEntity with the theme controller so that it can also check the types and get the themes from the database
-# from backend.domain.models import ThemeEntity
+from backend.infrastructure.models import ThemeResponse
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[dict])
-def list_themes():
-    themes = ThemeService.list_themes()
-    return [
-        {"id": t.id, "title": t.title, "description": t.description} for t in themes
-    ]
+@router.get("/", response_model=List[ThemeResponse])
+def list_themes(db: Session = Depends(get_db_session)):
+    theme_service = ThemeService(db)
+    themes = theme_service.list_themes()
+    return themes
 
 
-@router.post("/", response_model=dict)
-def create_theme(title: str, description: str = ""):
-    new_theme = ThemeService.create_theme(title, description)
-    return {
-        "id": new_theme.id,
-        "title": new_theme.title,
-        "description": new_theme.description,
-    }
+@router.post("/", response_model=ThemeResponse)
+def create_theme(
+    title: str, description: str = "", db: Session = Depends(get_db_session)
+):
+    theme_service = ThemeService(db)
+    new_theme = theme_service.create_theme(title, description)
+    return new_theme
 
 
-@router.get("/{theme_id}", response_model=dict)
-def get_theme(theme_id: int):
-    theme = ThemeService.get_theme(theme_id)
+@router.get("/{theme_id}", response_model=ThemeResponse)
+def get_theme(theme_id: int, db: Session = Depends(get_db_session)):
+    theme_service = ThemeService(db)
+    theme = theme_service.get_theme(theme_id)
     if not theme:
         raise HTTPException(status_code=404, detail="Theme not found")
-    return {"id": theme.id, "title": theme.title, "description": theme.description}
+    return theme
 
 
-@router.put("/{theme_id}", response_model=dict)
+@router.put("/{theme_id}", response_model=ThemeResponse)
 def update_theme(
-    theme_id: int, title: str = None, description: str = None, is_active: bool = None
+    theme_id: int,
+    title: str = None,
+    description: str = None,
+    is_active: bool = None,
+    db: Session = Depends(get_db_session),
 ):
-    updated = ThemeService.update_theme(
+    theme_service = ThemeService(db)
+    updated_theme = theme_service.update_theme(
         theme_id, title=title, description=description, is_active=is_active
     )
-    if not updated:
+    if not updated_theme:
         raise HTTPException(status_code=404, detail="Theme not found")
-    return {
-        "id": updated.id,
-        "title": updated.title,
-        "description": updated.description,
-    }
+    return updated_theme
 
 
 @router.delete("/{theme_id}", response_model=dict)
-def delete_theme(theme_id: int):
-    success = ThemeService.delete_theme(theme_id)
+def delete_theme(theme_id: int, db: Session = Depends(get_db_session)):
+    theme_service = ThemeService(db)
+    success = theme_service.delete_theme(theme_id)
     if not success:
         raise HTTPException(status_code=404, detail="Theme not found")
     return {"deleted": True}

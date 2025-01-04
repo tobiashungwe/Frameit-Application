@@ -1,4 +1,4 @@
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent
 from backend.infrastructure.models import ThemeDependencies, SuggestionsResponse
 from backend.core.model_config import ModelConfig
 import logfire
@@ -21,17 +21,6 @@ class KeywordAgent:
             result_type=SuggestionsResponse,
             system_prompt=static_prompt,
         )
-
-        @self.agent.system_prompt
-        def suggest_keywords(ctx: RunContext[ThemeDependencies]) -> SuggestionsResponse:
-            """Provide a diverse assortment of the most iconic, widely recognized character names, significant locations and objects strongly associated with that theme."""
-            theme = ctx.deps.theme
-            with logfire.span("keyword_agent:suggest_keywords"):
-                logfire.info(f"Generating keywords for theme: '{theme}'")
-                return self.prompt_service.generate_dynamic_prompt(
-                    name="keyword_agent_dynamic",
-                    theme=theme,
-                )
 
 
 # TODO: Fix this validator and make sure it works with compound words!

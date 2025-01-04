@@ -12,7 +12,9 @@ class ResearchAgent:
     def __init__(self, db):
         self.prompt_service = PromptService(db)
 
-        static_prompt = self.prompt_service.get_prompt_template("research_theme_static")
+        static_prompt = self.prompt_service.get_prompt_template(
+            "researcher_theme_static"
+        )
 
         # Initialize the Agent with a default system prompt
         self.agent = Agent(
@@ -32,7 +34,7 @@ class ResearchAgent:
                     f"Researching theme for query: '{theme}' with keywords: '{user_keywords}'"
                 )
                 return self.prompt_service.generate_dynamic_prompt(
-                    name="research_theme_dynamic",
+                    name="researcher_theme_dynamic",
                     theme=theme,
                     user_keywords=user_keywords,
                 )

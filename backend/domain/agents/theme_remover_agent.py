@@ -29,4 +29,6 @@ class ThemeRemoverAgent:
                 static_prompt = self.prompt_service.get_prompt_template(
                     "theme_remover_agent_static"
                 )
+
+                logfire.info("Used Prompt: " + static_prompt)
                 return static_prompt

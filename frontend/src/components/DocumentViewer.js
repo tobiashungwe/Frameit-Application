@@ -7,7 +7,7 @@ const DocumentViewer = ({ sanitizedContent }) => {
 
   return (
     <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
-      <Typography variant="h6">Generated Story</Typography>
+      <Typography variant="h6" component="h6">Generated Story</Typography>
       <Box component="div" style={{ whiteSpace: "pre-wrap" }}>
         {lines.map((line, index) => (
           <Typography key={index} variant="body1">

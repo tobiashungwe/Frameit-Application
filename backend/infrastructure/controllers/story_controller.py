@@ -71,7 +71,8 @@ async def generate_keywords(
         keyword_agent = KeywordAgent(db)
         search_agent = SearchAgent(db)
         result = await keyword_agent.agent.run(
-            f'You are an expert in popular culture references. Given the theme: "{request.theme}"'
+            f'You are an expert in popular culture references. Given the theme: "{request.theme}"',
+            deps=themeDepends,
         )
         keywords = result.data
 

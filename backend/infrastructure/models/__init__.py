@@ -14,6 +14,7 @@ from .responses import (
     StoryResponse,
     ResearchResponse,
     AdapterResponse,
+    ThemeResponse,
 )
 
 __all__ = [
@@ -34,4 +35,5 @@ __all__ = [
     "StoryResponse",
     "ResearchResponse",
     "AdapterResponse",
+    "ThemeResponse",
 ]
