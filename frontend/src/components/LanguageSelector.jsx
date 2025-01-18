@@ -1,12 +1,12 @@
 import React from "react";
-import { TextField, MenuItem, Grid } from "@mui/material";
+import { TextField, MenuItem, Grid2 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 const LanguageSelector = ({ language, onChange }) => {
   const { t } = useTranslation();
 
   return (
-    <Grid container justifyContent="flex-end">
+    <Grid2 container justifyContent="flex-end">
       <TextField
         select
         value={language}
@@ -21,7 +21,7 @@ const LanguageSelector = ({ language, onChange }) => {
         <MenuItem value="it">Italiano</MenuItem>
         <MenuItem value="es">Español</MenuItem>
       </TextField>
-    </Grid>
+    </Grid2>
   );
 };
 

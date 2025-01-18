@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ThemeProvider, Switch, FormControlLabel, createTheme, Container, Box } from "@mui/material";
+import { ThemeProvider, Switch, FormControlLabel, createTheme,Snackbar,Container, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 
@@ -21,17 +21,15 @@ import useSearchTheme from "./hooks/useSearchTheme";
 
 //Functions 
 const fetchTranslations = async (language) => {
-  try {
     const response = await fetch(`http://localhost:8000/api/translations/${language}`);
     if (!response.ok) {
-      throw new Error("Failed to load translations");
+        throw new Error(`Failed to load translations: ${response.statusText}`); // Include response details
     }
     const data = await response.json();
+    if (!data.translations) {
+        throw new Error("Invalid response structure: missing 'translations' property.");
+    }
     return data.translations;
-  } catch (error) {
-    console.error("Error fetching translations:", error);
-    return {};
-  }
 };
 // ===================================================
 
@@ -60,6 +58,8 @@ function App() {
   const [sanitizedContent, setSanitizedContent] = useState("");
   const [originalContent, setOriginalContent] = useState("");
   const [useSanitizedContent, setUseSanitizedContent] = useState(true);
+  const [error, setError] = useState("");
+
 
   const [theme, setTheme] = useState("");
   const [selectedKeywords, setSelectedKeywords] = useState([]); // user-selected
@@ -88,8 +88,12 @@ function App() {
       i18n.addResourceBundle(lang, "translation", translations, true, true);
       await i18n.changeLanguage(lang);
       setLanguage(lang);
+      setError("");
+
     } catch (error) {
       console.error("Error loading language:", error);
+      setError("Failed to load translations. Please try again later.");
+
     }
   };
 
@@ -114,7 +118,9 @@ function App() {
   
 
   return (
-    <ThemeProvider theme={appTheme}>
+      <>
+
+      <ThemeProvider theme={appTheme}>
       <Container maxWidth="md">
         <Box sx={{ mt: 4, p: 4, bgcolor: "background.paper", boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", borderRadius: 4, }}>
           {/* Spinner Loader */}
@@ -200,6 +206,16 @@ function App() {
         </Box>
       </Container>
     </ThemeProvider>
+      {error && (
+          <Snackbar
+              open={!!error}
+              autoHideDuration={6000}
+              onClose={() => setError("")}
+              message={error}
+          />
+      )}
+      </>
+
   );
 }
 

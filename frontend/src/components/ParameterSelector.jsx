@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, TextField, Typography, MenuItem, Box } from "@mui/material";
+import { Grid2, TextField, Typography, MenuItem, Box } from "@mui/material";
 
 const ParameterSelector = ({
   groupCount,
@@ -15,8 +15,8 @@ const ParameterSelector = ({
 }) => {
   return (
     <>
-      <Grid container spacing={2} mt={2}>
-        <Grid item xs={6}>
+      <Grid2 container spacing={2} mt={2}>
+        <Grid2 item xs={6}>
           <Typography variant="h6">{t("labels.groups")}</Typography>
           <TextField
             select
@@ -31,9 +31,9 @@ const ParameterSelector = ({
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
+        </Grid2>
 
-        <Grid item xs={6}>
+        <Grid2 item xs={6}>
           <Typography variant="h6">{t("labels.terrain")}</Typography>
           <TextField
             select
@@ -48,8 +48,8 @@ const ParameterSelector = ({
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       <Box mt={2}>
         <Typography variant="h6">{t("labels.materials")}</Typography>
