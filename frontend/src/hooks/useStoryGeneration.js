@@ -3,7 +3,7 @@ const useStoryGeneration = ({ t }) => {
     theme,
     file,
     selectedKeywords,
-    sanitizedContent,
+    content,
     groupCount,
     terrain,
     material,
@@ -24,7 +24,7 @@ const useStoryGeneration = ({ t }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           theme,
-          exercise: { filename: file.name, content: sanitizedContent.data },
+          exercise: { filename: file.name, content: content.data },
           materials: [material],
           terrain,
           selected_keywords: selectedKeywords,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ThemeProvider, createTheme, Container, Box } from "@mui/material";
+import { ThemeProvider, Switch, FormControlLabel, createTheme, Container, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 
@@ -11,6 +11,7 @@ import ThemeSearch from "./components/ThemeSearch";
 import ParameterSelector from "./components/ParameterSelector";
 import StoryGenerator from "./components/StoryGenerator";
 import DocumentViewer from "./components/DocumentViewer";
+import SpinnerLoader from "./components/SpinnerLoader";
 
 // Import hooks`
 import useFileUpload from "./hooks/useFileUpload";
@@ -57,6 +58,8 @@ function App() {
   const [language, setLanguage] = useState(defaultLanguage);
   const [file, setFile] = useState(null);
   const [sanitizedContent, setSanitizedContent] = useState("");
+  const [originalContent, setOriginalContent] = useState("");
+  const [useSanitizedContent, setUseSanitizedContent] = useState(true);
 
   const [theme, setTheme] = useState("");
   const [selectedKeywords, setSelectedKeywords] = useState([]); // user-selected
@@ -67,6 +70,7 @@ function App() {
 
   // Loading states
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
    // Hooks
    const { handleUploadFile } = useFileUpload({ t });
@@ -113,7 +117,9 @@ function App() {
     <ThemeProvider theme={appTheme}>
       <Container maxWidth="md">
         <Box sx={{ mt: 4, p: 4, bgcolor: "background.paper", boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", borderRadius: 4, }}>
-          
+          {/* Spinner Loader */}
+          <SpinnerLoader isLoading={isLoading} />
+
           <LanguageSelector language={language} onChange={handleLanguageChange} t={t} />
 
           
@@ -121,16 +127,33 @@ function App() {
             file={file}
             onUploadFile={(selectedFile) => {
               setFile(selectedFile);
-              handleUploadFile(selectedFile, setSanitizedContent);
+               handleUploadFile(selectedFile, setSanitizedContent, setOriginalContent, setIsLoading);
             }}
             t={t}
           />
 
-          {sanitizedContent && (
-            <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t} >
-              <DocumentViewer />
-            </SanitizedContentViewer>
-          )}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useSanitizedContent}
+                onChange={(e) => setUseSanitizedContent(e.target.checked)}
+              />
+            }
+            label={t("labels.use_sanitized_content") || "Use Sanitized Content"}
+          />
+
+          <Box sx={{ mt: 4 }}>
+                    {useSanitizedContent && sanitizedContent ? (
+              <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t}>
+                <DocumentViewer sanitizedContent={sanitizedContent} />
+              </SanitizedContentViewer>
+            ) : originalContent ? (
+              <DocumentViewer sanitizedContent={originalContent} />
+            ) : (
+              <p>No content available. Please upload a document.</p>
+            )}
+          </Box>
+
 
           <ThemeSearch 
                 theme={theme}
@@ -161,7 +184,7 @@ function App() {
                 theme,
                 file,
                 selectedKeywords,
-                sanitizedContent,
+                content: useSanitizedContent ? sanitizedContent : originalContent,
                 groupCount,
                 terrain,
                 material,
