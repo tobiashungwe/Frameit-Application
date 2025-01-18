@@ -12,6 +12,7 @@ import ParameterSelector from "./components/ParameterSelector";
 import StoryGenerator from "./components/StoryGenerator";
 import DocumentViewer from "./components/DocumentViewer";
 import SpinnerLoader from "./components/SpinnerLoader";
+import ToggleWithTooltip from "./components/ToggleWithTooltip";
 
 // Import hooks`
 import useFileUpload from "./hooks/useFileUpload";
@@ -19,18 +20,8 @@ import useStoryGeneration from "./hooks/useStoryGeneration";
 import useSearchTheme from "./hooks/useSearchTheme";
 
 
-//Functions 
-const fetchTranslations = async (language) => {
-    const response = await fetch(`http://localhost:8000/api/translations/${language}`);
-    if (!response.ok) {
-        throw new Error(`Failed to load translations: ${response.statusText}`); // Include response details
-    }
-    const data = await response.json();
-    if (!data.translations) {
-        throw new Error("Invalid response structure: missing 'translations' property.");
-    }
-    return data.translations;
-};
+
+
 // ===================================================
 
 const appTheme = createTheme({
@@ -81,6 +72,21 @@ function App() {
     loadLanguage(language);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
+
+    // =====================
+    // Functions
+    // =====================
+    const fetchTranslations = async (language) => {
+        const response = await fetch(`http://localhost:8000/api/translations/${language}`);
+        if (!response.ok) {
+            throw new Error(`Failed to load translations: ${response.statusText}`); // Include response details
+        }
+        const data = await response.json();
+        if (!data.translations) {
+            throw new Error("Invalid response structure: missing 'translations' property.");
+        }
+        return data.translations;
+    };
 
   const loadLanguage = async (lang) => {
     try {
@@ -138,15 +144,11 @@ function App() {
             t={t}
           />
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={useSanitizedContent}
-                onChange={(e) => setUseSanitizedContent(e.target.checked)}
-              />
-            }
-            label={t("labels.use_sanitized_content") || "Use Sanitized Content"}
-          />
+        <ToggleWithTooltip
+            useSanitizedContent={useSanitizedContent}
+            setUseSanitizedContent={setUseSanitizedContent}
+            t={t}
+        />
 
           <Box sx={{ mt: 4 }}>
                     {useSanitizedContent && sanitizedContent ? (
