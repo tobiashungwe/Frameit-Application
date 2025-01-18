@@ -232,10 +232,12 @@ async def upload_activity(
             f.write(await file.read())
         logfire.info(f"File uploaded successfully: {file_location}")
 
-        result = llm_client.whisper(file_path=file_location, wait_for_completion=True)
+        extracted_text = (
+            llm_client.whisper(file_path=file_location, wait_for_completion=True)
+            .get("extraction", {})
+            .get("result_text", "")
+        )
         logfire.info("LLMWhisperer processing completed.")
-
-        extracted_text = result.get("extraction", {}).get("result_text", "")
         if not extracted_text:
             raise HTTPException(
                 status_code=500, detail="Failed to extract text from the document."
@@ -246,7 +248,10 @@ async def upload_activity(
         )
         logfire.info("Content sanitized successfully.")
 
-        return {"sanitized_content": sanitized_content}
+        return {
+            "original_content": extracted_text,
+            "sanitized_content": sanitized_content,
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process file: {e}")
