@@ -27,7 +27,7 @@ import useSearchTheme from "./hooks/useSearchTheme";
 
 const appTheme = createTheme({
   palette: {
-    primary: { main: "#3f51b5" },
+    primary: { main: "#4a7199" },
     secondary: { main: "#f50057" },
   },
   typography: {
