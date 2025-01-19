@@ -18,17 +18,3 @@ class ThemeRemoverAgent:
             model=ModelConfig.DEFAULT_MODEL,
             system_prompt=base_prompt,
         )
-
-        @self.agent.system_prompt
-        def remove_theme() -> str:
-            """Remove the theme from the given story."""
-            with logfire.span("theme_remover_agent:remove_theme"):
-                logfire.info(
-                    "Removing theme from the story..., making sure to only provide the result!"
-                )
-                static_prompt = self.prompt_service.get_prompt_template(
-                    "theme_remover_agent_static"
-                )
-
-                logfire.info("Used Prompt: " + static_prompt)
-                return static_prompt

@@ -106,6 +106,7 @@ async def generate_story(
 ):
     """
     Generate a story using selected keywords and theme details.
+    Depending on the toggle, the content can be sanitized or used as-is.
     """
     with logfire.span("main:generate_story"):
         try:
@@ -114,96 +115,95 @@ async def generate_story(
             adapter_agent = AdapterAgent(db)
             generator_agent = GeneratorAgent(db)
             translator_agent = TranslatorAgent(db)
+            theme_remover_agent = ThemeRemoverAgent(db)
 
-            try:
-                logfire.info(
-                    f"Generating story for theme '{request.theme}' with file '{request.exercise.filename}"
+            # Step 1: Validate and Process Content
+            original_content = request.exercise.content
+            if not original_content:
+                raise HTTPException(
+                    status_code=400, detail="Exercise content is required."
                 )
 
-                # Fetch theme details
-                # TODO: add settings to configure if the agent should be used or not, this can be usefull for users if they want to save tokens
-                with logfire.span("researcher_agent:research_theme"):
-                    logfire.info("Research agent started job!")
-                    theme_details_result = await researcher_agent.agent.run(
-                        "Research this!",
-                        deps=ResearchDependencies(
-                            theme=request.theme, user_keywords=request.selected_keywords
-                        ),
-                    )
-                    logfire.info(f"Theme details: {theme_details_result.data}")
+            # Check if sanitization is enabled
+            if request.exercise.sanitize:
+                logfire.info("Sanitizing the provided content...")
+                sanitized_content = await theme_remover_agent.agent.run(
+                    f"Remove themes for clarity. Content: {original_content}"
+                )
+                content_to_process = sanitized_content
+                logfire.info("Sanitization completed.")
+            else:
+                logfire.info("Using original content without sanitization.")
+                content_to_process = original_content
+
+            # Step 2: Research Theme Details
+            try:
+                logfire.info(f"Researching theme '{request.theme}'...")
+                theme_details_result = await researcher_agent.agent.run(
+                    "Research this!",
+                    deps=ResearchDependencies(
+                        theme=request.theme, user_keywords=request.selected_keywords
+                    ),
+                )
+                logfire.info(f"Theme details: {theme_details_result.data}")
             except Exception as e:
                 logfire.error(f"Error fetching theme details: {e}")
                 raise HTTPException(
                     status_code=500, detail="Failed to fetch theme details."
                 )
-            finally:
-                logfire.info("Theme details fetched successfully.")
-
             theme_details = theme_details_result.data
 
+            # Step 3: Map Objects in the Activity
             try:
-                # Map objects in the activity
-                with logfire.span("adapter_agent:map_objects"):
-                    logfire.info("Adapter agent started job!")
-                    object_mapping_result = await adapter_agent.agent.run(
-                        "Map objects",
-                        deps=AdapterDependencies(
-                            theme=request.theme,
-                            exercise=request.exercise.content,
-                            user_keywords=request.selected_keywords,
-                            materials=request.materials,
-                        ),
-                    )
-                    logfire.info(f"Object mapping: {object_mapping_result.data}")
+                logfire.info("Mapping objects in the activity...")
+                object_mapping_result = await adapter_agent.agent.run(
+                    "Map objects",
+                    deps=AdapterDependencies(
+                        theme=request.theme,
+                        exercise=content_to_process,
+                        user_keywords=request.selected_keywords,
+                        materials=request.materials,
+                    ),
+                )
+                logfire.info(f"Object mapping: {object_mapping_result.data}")
             except Exception as e:
                 logfire.error(f"Error mapping objects: {e}")
                 raise HTTPException(status_code=500, detail="Failed to map objects.")
-            finally:
-                logfire.info("Objects mapped successfully.")
-
             object_mapping = object_mapping_result.data
 
+            # Step 4: Generate Story
             try:
-                # Generate story
-                with logfire.span("generator_agent:create_story"):
-                    logfire.info("Generator agent started job!")
-                    story_result = await generator_agent.agent.run(
-                        f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{request.exercise.content}', using the following keywords: {request.selected_keywords} in the story.",
-                        deps=GeneratorDependencies(
-                            theme=request.theme,
-                            exercise=request.exercise.content,
-                            theme_details=theme_details.details,
-                            object_mapping=object_mapping.object_mapping,
-                        ),
-                    )
-                    logfire.info(f"Generated story: {story_result.data}")
+                logfire.info("Generating the story...")
+                story_result = await generator_agent.agent.run(
+                    f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{content_to_process}', using the following keywords: {request.selected_keywords}.",
+                    deps=GeneratorDependencies(
+                        theme=request.theme,
+                        exercise=content_to_process,
+                        theme_details=theme_details.details,
+                        object_mapping=object_mapping.object_mapping,
+                    ),
+                )
+                logfire.info(f"Generated story: {story_result.data}")
             except Exception as e:
                 logfire.error(f"Error generating story: {e}")
                 raise HTTPException(status_code=500, detail="Failed to generate story.")
-            finally:
-                logfire.info("Story generated successfully.")
-
             story = story_result.data
 
+            # Step 5: Translate Story to User-Selected Language
             try:
-                # Translate story to user-selected language
-                with logfire.span("translator_agent:translate_story"):
-                    logfire.info("Translator agent started job!")
-                    translation_result = await translator_agent.agent.run(
-                        "Translate the text accurately and naturally, preserving its meaning, tone, and cultural context.",
-                        deps=TranslationDependencies(
-                            story=story, target_language=request.language
-                        ),
-                    )
-                    logfire.info(f"Translated story: {translation_result.data}")
+                logfire.info("Translating the story...")
+                translation_result = await translator_agent.agent.run(
+                    "Translate the text accurately and naturally, preserving its meaning, tone, and cultural context.",
+                    deps=TranslationDependencies(
+                        story=story, target_language=request.language
+                    ),
+                )
+                logfire.info(f"Translated story: {translation_result.data}")
             except Exception as e:
                 logfire.error(f"Error translating story: {e}")
                 raise HTTPException(
                     status_code=500, detail="Failed to translate story."
                 )
-            finally:
-                logfire.info("Story translated successfully.")
-
             translated_story = translation_result.data
 
             logfire.info("Story generation completed successfully.")
@@ -232,10 +232,12 @@ async def upload_activity(
             f.write(await file.read())
         logfire.info(f"File uploaded successfully: {file_location}")
 
-        result = llm_client.whisper(file_path=file_location, wait_for_completion=True)
+        extracted_text = (
+            llm_client.whisper(file_path=file_location, wait_for_completion=True)
+            .get("extraction", {})
+            .get("result_text", "")
+        )
         logfire.info("LLMWhisperer processing completed.")
-
-        extracted_text = result.get("extraction", {}).get("result_text", "")
         if not extracted_text:
             raise HTTPException(
                 status_code=500, detail="Failed to extract text from the document."
@@ -246,7 +248,10 @@ async def upload_activity(
         )
         logfire.info("Content sanitized successfully.")
 
-        return {"sanitized_content": sanitized_content}
+        return {
+            "original_content": extracted_text,
+            "sanitized_content": sanitized_content,
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process file: {e}")
