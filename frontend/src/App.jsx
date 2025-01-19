@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ThemeProvider, Switch, FormControlLabel, createTheme,Snackbar,Container, Box } from "@mui/material";
+import {ThemeProvider, createTheme, Snackbar, Container, Box, Typography} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 
@@ -12,12 +12,13 @@ import ParameterSelector from "./components/ParameterSelector";
 import StoryGenerator from "./components/StoryGenerator";
 import DocumentViewer from "./components/DocumentViewer";
 import SpinnerLoader from "./components/SpinnerLoader";
-import ToggleWithTooltip from "./components/ToggleWithTooltip";
+
 
 // Import hooks`
 import useFileUpload from "./hooks/useFileUpload";
 import useStoryGeneration from "./hooks/useStoryGeneration";
 import useSearchTheme from "./hooks/useSearchTheme";
+
 
 
 
@@ -134,31 +135,31 @@ function App() {
 
           <LanguageSelector language={language} onChange={handleLanguageChange} t={t} />
 
-          
-          <FileUploader
-            file={file}
-            onUploadFile={(selectedFile) => {
-              setFile(selectedFile);
-               handleUploadFile(selectedFile, setSanitizedContent, setOriginalContent, setIsLoading);
-            }}
-            t={t}
-          />
 
-        <ToggleWithTooltip
-            useSanitizedContent={useSanitizedContent}
-            setUseSanitizedContent={setUseSanitizedContent}
-            t={t}
-        />
 
-          <Box sx={{ mt: 4 }}>
+
+
+            <FileUploader
+                file={file}
+                onUploadFile={(selectedFile) => {
+                    setFile(selectedFile);
+                    handleUploadFile(selectedFile, setSanitizedContent, setOriginalContent, setIsLoading);
+                }}
+                t={t}
+                useSanitizedContent={useSanitizedContent}
+                setUseSanitizedContent={setUseSanitizedContent}
+            />
+
+
+            <Box sx={{ mt: 4 }}>
                     {useSanitizedContent && sanitizedContent ? (
               <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t}>
-                <DocumentViewer sanitizedContent={sanitizedContent} />
+                <DocumentViewer sanitizedContent={sanitizedContent} t={t} />
               </SanitizedContentViewer>
             ) : originalContent ? (
               <DocumentViewer sanitizedContent={originalContent} />
             ) : (
-              <p>No content available. Please upload a document.</p>
+              <Typography variant="caption">{t("messages.no_content_message")}</Typography>
             )}
           </Box>
 
@@ -186,19 +187,23 @@ function App() {
             t={t}
           />
 
+
+
           <StoryGenerator
             onGenerate={() =>
               handleGenerateStory({
-                theme,
-                file,
-                selectedKeywords,
-                content: useSanitizedContent ? sanitizedContent : originalContent,
-                groupCount,
-                terrain,
-                material,
-                language,
-                setStory,
-                setIsGenerating,
+                  theme,
+                  file,
+                  sanitizedContent,
+                  originalContent,
+                  useSanitizedContent,
+                  selectedKeywords,
+                  groupCount,
+                  terrain,
+                  material,
+                  language,
+                  setStory,
+                  setIsGenerating,
               })
             }
             isGenerating={isGenerating}

@@ -1,16 +1,18 @@
 const useStoryGeneration = ({ t }) => {
   const handleGenerateStory = async ({
-    theme,
-    file,
-    selectedKeywords,
-    content,
-    groupCount,
-    terrain,
-    material,
-    language,
-    setStory,
-    setIsGenerating,
-  }) => {
+                                         theme,
+                                         file,
+                                         sanitizedContent,
+                                         originalContent,
+                                         useSanitizedContent,
+                                         selectedKeywords,
+                                         groupCount,
+                                         terrain,
+                                         material,
+                                         language,
+                                         setStory,
+                                         setIsGenerating,
+                                     }) => {
     if (!theme || !file || !groupCount || !terrain || !material || selectedKeywords.length === 0) {
       alert(t("messages.all_fields_required"));
       return;
@@ -19,12 +21,18 @@ const useStoryGeneration = ({ t }) => {
     setIsGenerating(true);
 
     try {
+        const exercise = {
+            filename: file.name,
+            content: useSanitizedContent ? sanitizedContent : originalContent, // Ensure content is always sent
+            sanitize: useSanitizedContent, // Toggle sanitization
+        };
+
       const response = await fetch("http://localhost:8000/api/stories/generate_story", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           theme,
-          exercise: { filename: file.name, content: content.data },
+          exercise,
           materials: [material],
           terrain,
           selected_keywords: selectedKeywords,
