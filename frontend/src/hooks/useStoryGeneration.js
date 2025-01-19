@@ -21,9 +21,11 @@ const useStoryGeneration = ({ t }) => {
     setIsGenerating(true);
 
     try {
+
+
         const exercise = {
             filename: file.name,
-            content: useSanitizedContent ? sanitizedContent : originalContent, // Ensure content is always sent
+            content: useSanitizedContent ? sanitizedContent.data : originalContent, // Ensure content is always sent
             sanitize: useSanitizedContent, // Toggle sanitization
         };
 
