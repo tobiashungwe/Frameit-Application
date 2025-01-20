@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import {ThemeProvider, createTheme, Snackbar, Container, Box, Typography} from "@mui/material";
 import { useTranslation } from "react-i18next";
-import "./i18n";
+import "../i18n";
 
 // Import child components
-import LanguageSelector from "./components/LanguageSelector";
-import FileUploader from "./components/FileUploader";
-import SanitizedContentViewer from "./components/SanitizedContentViewer";
-import ThemeSearch from "./components/ThemeSearch";
-import ParameterSelector from "./components/ParameterSelector";
-import StoryGenerator from "./components/StoryGenerator";
-import DocumentViewer from "./components/DocumentViewer";
-import SpinnerLoader from "./components/SpinnerLoader";
+import LanguageSelector from "../components/LanguageSelector";
+import FileUploader from "../components/FileUploader";
+import SanitizedContentViewer from "../components/SanitizedContentViewer";
+import ThemeSearch from "../components/ThemeSearch";
+import ParameterSelector from "../components/ParameterSelector";
+import StoryGenerator from "../components/StoryGenerator";
+import DocumentViewer from "../components/DocumentViewer";
+import SpinnerLoader from "../components/SpinnerLoader";
 
 
 // Import hooks`
-import useFileUpload from "./hooks/useFileUpload";
-import useStoryGeneration from "./hooks/useStoryGeneration";
-import useSearchTheme from "./hooks/useSearchTheme";
+import useFileUpload from "../hooks/useFileUpload";
+import useStoryGeneration from "../hooks/useStoryGeneration";
+import useSearchTheme from "../hooks/useSearchTheme";
 
 
 
@@ -226,4 +226,4 @@ function App() {
   );
 }
 
-export default App;
+export default HomePage;
