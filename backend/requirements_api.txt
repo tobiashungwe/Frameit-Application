@@ -11,3 +11,4 @@ logfire
 fastapi
 python-dotenv
 sqlalchemy
+pydantic_ai
