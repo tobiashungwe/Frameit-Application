@@ -15,13 +15,13 @@ const StoryGenerator = ({ onGenerate, isGenerating, story }) => {
           disabled={isGenerating}
           fullWidth
         >
-          {isGenerating ? <CircularProgress size={24} /> : t("labels.document_content")}
+          {isGenerating ? <CircularProgress size={24} /> : t("labels.generate_story")}
         </Button>
       </Box>
 
       {story && (
         <Box mt={4} p={2} bgcolor="background.paper" borderRadius={4}>
-          <Typography variant="h6" component="h6">{t("labels.document_content")}</Typography>
+          <Typography variant="h6" component="h6">{t("labels.generated_story")}</Typography>
           <Typography component="div">{story}</Typography>
         </Box>
       )}

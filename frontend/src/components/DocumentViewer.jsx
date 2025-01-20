@@ -12,7 +12,7 @@ const DocumentViewer = ({ sanitizedContent = "" }) => {
 
     return (
         <Box mt={4}>
-            <Typography variant="h6" component="h2" gutterBottom>
+            <Typography  sx={{ textTransform: 'uppercase', fontWeight: 500, padding: 0.5, fontSize: 14, color: "#e0fdfd", backgroundColor: "#497098", width: "fit-content", marginBottom: 0, borderTopLeftRadius: 10, borderTopRightRadius: 10, border: "solid 1px gray",   }} component="h2" gutterBottom>
 
                 {t("labels.document_content", "Document Content")}
             </Typography>

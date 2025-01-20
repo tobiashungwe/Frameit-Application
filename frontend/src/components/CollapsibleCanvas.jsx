@@ -17,7 +17,11 @@ const CollapsibleCanvas = ({ children, minHeight = 300, maxHeight = 600 }) => {
                 height: expanded ? maxHeight : minHeight,
                 overflow: "auto",
                 border: "1px solid #ccc",
-                borderRadius: 2,
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 8,
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
+
                 transition: "height 0.3s ease-in-out",
                 mb: 2,
             }}

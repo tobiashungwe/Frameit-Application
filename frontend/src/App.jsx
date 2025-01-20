@@ -51,6 +51,8 @@ function App() {
   const [originalContent, setOriginalContent] = useState("");
   const [useSanitizedContent, setUseSanitizedContent] = useState(true);
   const [error, setError] = useState("");
+  const [isUploadAttempted, setIsUploadAttempted] = useState(false);
+
 
 
   const [theme, setTheme] = useState("");
@@ -143,6 +145,7 @@ function App() {
                 file={file}
                 onUploadFile={(selectedFile) => {
                     setFile(selectedFile);
+                    setIsUploadAttempted(true);
                     handleUploadFile(selectedFile, setSanitizedContent, setOriginalContent, setIsLoading);
                 }}
                 t={t}
@@ -152,25 +155,47 @@ function App() {
 
 
             <Box sx={{ mt: 4 }}>
-                    {useSanitizedContent && sanitizedContent ? (
-            <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t}>
-                <DocumentViewer />
-            </SanitizedContentViewer>
-            ) : originalContent ? (
-              <DocumentViewer sanitizedContent={originalContent} />
-            ) : (
-              <Typography variant="caption">{t("messages.no_content_message")}</Typography>
-            )}
-          </Box>
+                {isLoading ? (
+                    // Show loading spinner
+                    <SpinnerLoader isLoading={isLoading} />
+                ) : sanitizedContent || originalContent ? (
+                    // Show content and labels if available
+                    <>
+                        <Typography variant="h6" component="h2" gutterBottom>
+                            {useSanitizedContent
+                                ? t("labels.cleaned_document_preview", "Activity Preview (No Theme)")
+                                : t("labels.original_document_preview", "Original Activity Preview")}
+                        </Typography>
+
+                        {useSanitizedContent && sanitizedContent ? (
+                            <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t}>
+                                <DocumentViewer />
+                            </SanitizedContentViewer>
+                        ) : (
+                            <DocumentViewer sanitizedContent={originalContent} />
+                        )}
+                    </>
+                ) : (
+
+                    isUploadAttempted && !isLoading && (
+                        <Typography variant="body1" color="error" sx={{ mt: 2 }}>
+                            {t("messages.no_content_message", "No content available. Please upload a document.")}
+                        </Typography>
+                    )
+                )}
+            </Box>
 
 
-          <ThemeSearch 
+
+
+
+            <ThemeSearch
                 theme={theme}
                 onThemeChange={setTheme}
                 keywords={keywords}
                 selectedKeywords={selectedKeywords}
                 onKeywordToggle={handleKeywordSelection}
-                onSearch={() => handleSearchTheme(theme)} // Ensure this is correctly assigned
+                onSearch={() => handleSearchTheme(theme)}
                 isSearching={isSearching}
                 hasSearched={hasSearched}
             />
