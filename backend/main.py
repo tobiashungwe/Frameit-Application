@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
+from backend.core.logger import logger
 from backend.core.database import Base, engine
 from backend.infrastructure.controllers import (
     theme_controller,
