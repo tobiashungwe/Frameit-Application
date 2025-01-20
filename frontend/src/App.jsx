@@ -153,9 +153,9 @@ function App() {
 
             <Box sx={{ mt: 4 }}>
                     {useSanitizedContent && sanitizedContent ? (
-              <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t}>
-                <DocumentViewer sanitizedContent={sanitizedContent} t={t} />
-              </SanitizedContentViewer>
+            <SanitizedContentViewer sanitizedContent={sanitizedContent} t={t}>
+                <DocumentViewer />
+            </SanitizedContentViewer>
             ) : originalContent ? (
               <DocumentViewer sanitizedContent={originalContent} />
             ) : (
