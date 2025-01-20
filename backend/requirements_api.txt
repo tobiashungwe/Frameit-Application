@@ -12,3 +12,4 @@ fastapi
 python-dotenv
 sqlalchemy
 pydantic_ai
+unstract
