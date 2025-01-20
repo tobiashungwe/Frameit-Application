@@ -9,3 +9,5 @@ pre-commit
 black
 logfire
 fastapi
+python-dotenv
+sqlalchemy
