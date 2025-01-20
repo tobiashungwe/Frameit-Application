@@ -8,3 +8,4 @@ flake8
 pre-commit
 black
 logfire
+fastapi
