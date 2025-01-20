@@ -215,7 +215,7 @@ async def generate_story(
 
 
 # Directory where files will be stored
-UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR = Path("backend/infrastructure/uploads")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
