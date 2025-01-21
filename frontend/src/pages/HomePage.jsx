@@ -175,17 +175,18 @@ function HomePage() {
                 hasSearched={hasSearched}
             />
 
-          <ParameterSelector groupCount={groupCount}
-            setGroupCount={setGroupCount}
-            terrain={terrain}
-            setTerrain={setTerrain}
-            material={material}
-            setMaterial={setMaterial}
-            staticGroups={staticGroups || []}
-            staticTerrains={staticTerrains || []}
-            staticMaterials={staticMaterials || []}
-            t={t}
-          />
+          <ParameterSelector
+              groupCount={groupCount}
+              setGroupCount={setGroupCount}
+              terrain={terrain}
+              setTerrain={setTerrain}
+              material={material}
+              setMaterial={setMaterial}
+              staticGroups={[ ...staticGroups]}
+              staticTerrains={[ ...staticTerrains]}
+              staticMaterials={[ ...staticMaterials]}
+              t={t}
+            />
 
 
 
