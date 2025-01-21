@@ -11,6 +11,9 @@ from backend.infrastructure.controllers import (
     theme_controller,
     story_controller,
     translation_controller,
+    group_controller,
+    terrain_controller,
+    material_controller,
 )
 
 # Create all DB tables on startup (if you prefer)
@@ -51,6 +54,11 @@ app.include_router(theme_controller.router, prefix="/api/themes", tags=["Themes"
 app.include_router(story_controller.router, prefix="/api/stories", tags=["Stories"])
 app.include_router(
     translation_controller.router, prefix="/api/translations", tags=["Translations"]
+)
+app.include_router(group_controller.router, prefix="/api/groups", tags=["Groups"])
+app.include_router(terrain_controller.router, prefix="/api/terrains", tags=["Terrains"])
+app.include_router(
+    material_controller.router, prefix="/api/materials", tags=["Materials"]
 )
 
 
