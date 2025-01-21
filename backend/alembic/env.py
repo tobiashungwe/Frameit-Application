@@ -1,10 +1,26 @@
 from logging.config import fileConfig
 
+from alembic import context
+from backend.core.database import DATABASE_URL, Base
+from backend.domain.models.user import User  # Adjust paths as per your structure
+from backend.domain.models.group import Group
+from backend.domain.models.material import Material
+from backend.domain.models.prompt import Prompt
+from backend.domain.models.terrain import Terrain
+from backend.domain.models.theme import ThemeEntity
+from backend.domain.models.translation import Translation
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from core.database import DATABASE_URL, Base
 
-from alembic import context
+__all__ = [
+    "User",
+    "Group",
+    "Material",
+    "Prompt",
+    "Terrain",
+    "ThemeEntity",
+    "Translation",
+]
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
