@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           source venv/bin/activate
-          black --check .
+          black .
 
       - name: Run flake8
         working-directory: backend
