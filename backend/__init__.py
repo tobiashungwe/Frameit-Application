@@ -1,7 +1,7 @@
 # Frameit-Application/backend/__init__.py
 
 # Centralized imports for commonly used modules
-from .core.logger import logger
+from backend.core.logger import logger
 from .core.database import engine
 
 # Package metadata
