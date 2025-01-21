@@ -7,7 +7,7 @@ on:
     branches: [ main, dev ]
 
 jobs:
-   backend:
+  backend:  # Fixed indentation here
     name: Backend Checks (FastAPI)
     runs-on: ubuntu-latest
 
@@ -55,7 +55,7 @@ jobs:
           source venv/bin/activate
           pytest --maxfail=1 --disable-warnings
 
-  frontend:
+  frontend:  # Fixed indentation here
     name: Frontend Checks (React)
     runs-on: ubuntu-latest
 
