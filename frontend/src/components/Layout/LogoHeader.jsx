@@ -1,28 +1,30 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import frameItLogo from "../../assets/images/FrameIt-logo.png";
 
 const LogoHeader = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
-      component={Link}
-      to="/" // Navigate to the landing page on click
       sx={{
         display: "flex",
         alignItems: "center",
-        textDecoration: "none", // Remove underline for the link
-        mb: 4, // Add spacing below the header
+        cursor: "pointer",
+        gap: 1, // Space between the logo and text
       }}
+      onClick={() => navigate("/")}
     >
       <Box
         component="img"
         src={frameItLogo}
         alt="FrameIt Logo"
         sx={{
-          width: "40px", // Adjust size as needed
+          width: "40px",
           height: "40px",
-          mr: 1, // Add space between logo and text
+          objectFit: "cover",
+          borderRadius: "8px", // Optional, for slightly rounded edges
         }}
       />
       <Typography variant="h5" fontWeight="bold" color="text.primary">
