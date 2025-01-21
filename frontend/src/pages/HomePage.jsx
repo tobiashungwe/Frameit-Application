@@ -41,7 +41,7 @@ const staticTerrains = ["Indoor Gym", "Grass Field", "Playground", "Beach"];
 const staticGroups = ["Small Group", "Medium Group", "Large Group"];
 const defaultLanguage = "nl";
 
-function App() {
+function HomePage() {
   const { t, i18n } = useTranslation();
 
   // Global states
