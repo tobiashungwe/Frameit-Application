@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Snackbar,
-  Link,
-  Box,
-} from "@mui/material";
 import AuthLayout from "../components/Layout/AuthLayout";
+import AuthForm from "../components/Auth/AuthForm";
+import ErrorSnackbar from "../components/Auth/ErrorSnackbar";
+import SuccessSnackbar from "../components/Auth/SuccessSnackbar";
+import LinksSection from "../components/Auth/LinksSection";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -19,7 +16,6 @@ const LoginPage = () => {
     setError("");
     setSuccess("");
 
-    // Basic validation
     if (!username || !password) {
       setError("Please fill out all fields.");
       return;
@@ -37,9 +33,7 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
-      // Typically store token in context or localStorage
       console.log("Access token:", data.access_token);
-
       setSuccess("Login successful!");
     } catch (err) {
       setError(err.message);
@@ -48,58 +42,33 @@ const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
-      <Box component="form" onSubmit={handleLogin}>
-        <TextField
-          label="Username"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          type="password"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          fullWidth
-        >
-          Login
-        </Button>
-
-        <Box sx={{ mt: 2 }}>
-          <Link href="/register" underline="hover">
-            Don&apos;t have an account? Register
-          </Link>
-          <br />
-          <Link href="/forgot-password" underline="hover">
-            Forgot your password?
-          </Link>
-        </Box>
-      </Box>
-
-      <Snackbar
-        open={Boolean(error)}
-        onClose={() => setError("")}
-        message={error}
-        autoHideDuration={6000}
+      <AuthForm
+        fields={[
+          {
+            label: "Username",
+            value: username,
+            onChange: (e) => setUsername(e.target.value),
+          },
+          {
+            label: "Password",
+            type: "password",
+            value: password,
+            onChange: (e) => setPassword(e.target.value),
+          },
+        ]}
+        buttonLabel="Login"
+        onSubmit={handleLogin}
       />
-      <Snackbar
-        open={Boolean(success)}
-        onClose={() => setSuccess("")}
-        message={success}
-        autoHideDuration={6000}
+
+      <LinksSection
+        links={[
+          { href: "/register", label: "Don't have an account? Register" },
+          { href: "/forgot-password", label: "Forgot your password?" },
+        ]}
       />
+
+      <ErrorSnackbar error={error} onClose={() => setError("")} />
+      <SuccessSnackbar success={success} onClose={() => setSuccess("")} />
     </AuthLayout>
   );
 };
