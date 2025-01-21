@@ -50,12 +50,14 @@ services:
       DB_HOST: "mysql"
       DB_NAME: "frameit"
       DB_PORT: "3306"
+      DATABASE_URL: "mysql+pymysql://frameit-admin:FrameIt123@mysql:3306/frameit"
       LOGFIRE_TOKEN: "4kkjLrKMyByq8vMqgd7d8vXBJBVZx6D2GLRq7CWLfhzg"
       GROQ_API_KEY: "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"
       LLMWHISPERER_API_KEY: "sequ6Qlik-Y17Gn7rgn9i2jvzXxQISg9E7NHC79OZoA"
     # Mount local code into /app for live development
     volumes:
       - .:/app
+      - ./.env:/app/backend/.env
     networks:
       - app_network
 
