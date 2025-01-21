@@ -46,9 +46,15 @@ class TranslationDependencies:
     target_language: str
 
 
-# Define dependencies for the Editor Agent
 @dataclass
 class EditorDependencies:
     """Dependencies for refining a story."""
 
     story: str
+
+
+@dataclass
+class DocumentMetaDependencies:
+    materials: list[str]
+    terrains: list[str]
+    groups: list[str]
