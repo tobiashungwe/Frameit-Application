@@ -15,7 +15,7 @@ DB_NAME = os.getenv("DB_NAME")
 
 # 2. Build the database URL for mysql+pymysql
 #DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-DATABASE_URL = "mysql+mysqlconnector://user:password@mysql_container:3306/user_db"
+DATABASE_URL = "mysql+mysqlconnector://user:password@localhost:3307/user_db"
 
 # 3. Create the SQLAlchemy engine
 #    - echo=True shows SQL logs in console, good for debugging.

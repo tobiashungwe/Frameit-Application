@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy the requirements file to the container
-COPY backend/requirements_api.txt .
+COPY requirements_api.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements_api.txt
