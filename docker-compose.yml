@@ -18,7 +18,7 @@ services:
     # Persist MySQL data between container restarts
     volumes:
       - db_data:/var/lib/mysql
-    # Healthcheck (optional, but helpful)
+    # Healthcheck
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppassword"]
       interval: 10s
@@ -47,7 +47,7 @@ services:
     environment:
       DB_USER: "frameit-admin"
       DB_PASS: "FrameIt123"
-      DB_HOST: "mysql"           # Must match the service name above
+      DB_HOST: "mysql"
       DB_NAME: "frameit"
       DB_PORT: "3306"
     # Mount local code into /app for live development
