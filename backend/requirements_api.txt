@@ -14,3 +14,4 @@ sqlalchemy
 pydantic_ai
 unstract
 llmwhisperer-client
+python-multipart
