@@ -1,25 +1,13 @@
 version: "3.8"
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: frameit-application-backend
-    #environment:
-     # - DATABASE_URL=mysql+pymysql://frameit-admin:FrameIt123@mysql_container:3306/frameit
-    ports:
-      - "8000:8000"
-    depends_on:
-      - mysql
-    networks:
-      - app_network
-    volumes:
-      - .:/app  # Mount the current directory for development
-
+  ##############################
+  # MySQL Database
+  ##############################
   mysql:
     image: mysql:8.0
     container_name: mysql_container
+    # MySQL environment
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: frameit
@@ -27,12 +15,55 @@ services:
       MYSQL_PASSWORD: FrameIt123
     ports:
       - "3306:3306"
+    # Persist MySQL data between container restarts
     volumes:
       - db_data:/var/lib/mysql
+    # Healthcheck (optional, but helpful)
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - app_network
+
+  ##############################
+  # Backend (FastAPI)
+  ##############################
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frameit-application-backend
+    # Expose port 8000 externally
+    ports:
+      - "8000:8000"
+    # Ensure the backend service won't start until MySQL is at least up (container started).
+    depends_on:
+      mysql:
+        condition: service_healthy
+    # Pass in DB config as environment variables. You can override these in a .env file if desired.
+    environment:
+      DB_USER: "frameit-admin"
+      DB_PASS: "FrameIt123"
+      DB_HOST: "mysql"           # Must match the service name above
+      DB_NAME: "frameit"
+      DB_PORT: "3306"
+    # Mount local code into /app for live development
+    volumes:
+      - .:/app
+    networks:
+      - app_network
+
+##############################
+# Named volume for database
+##############################
 volumes:
   db_data:
 
+##############################
+# Custom network
+##############################
 networks:
   app_network:
