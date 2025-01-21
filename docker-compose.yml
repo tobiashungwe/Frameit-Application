@@ -13,7 +13,6 @@ services:
       MYSQL_DATABASE: frameit
       MYSQL_USER: frameit-admin
       MYSQL_PASSWORD: FrameIt123
-      LOGFIRE_TOKEN: 4kkjLrKMyByq8vMqgd7d8vXBJBVZx6D2GLRq7CWLfhzg
     ports:
       - "3306:3306"
     # Persist MySQL data between container restarts
@@ -51,6 +50,7 @@ services:
       DB_HOST: "mysql"
       DB_NAME: "frameit"
       DB_PORT: "3306"
+      LOGFIRE_TOKEN: "4kkjLrKMyByq8vMqgd7d8vXBJBVZx6D2GLRq7CWLfhzg"
     # Mount local code into /app for live development
     volumes:
       - .:/app
