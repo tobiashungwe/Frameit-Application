@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 import "../i18n";
 
 // Import child components
-import LanguageSelector from "../components/LanguageSelector";
-import FileUploader from "../components/FileUploader";
-import SanitizedContentViewer from "../components/SanitizedContentViewer";
-import ThemeSearch from "../components/ThemeSearch";
-import ParameterSelector from "../components/ParameterSelector";
-import StoryGenerator from "../components/StoryGenerator";
-import DocumentViewer from "../components/DocumentViewer";
-import SpinnerLoader from "../components/SpinnerLoader";
+import LanguageSelector from "../components/HomePage/LanguageSelector";
+import FileUploader from "../components/HomePage/FileUploader";
+import SanitizedContentViewer from "../components/HomePage/SanitizedContentViewer";
+import ThemeSearch from "../components/HomePage/ThemeSearch";
+import ParameterSelector from "../components/HomePage/ParameterSelector";
+import StoryGenerator from "../components/HomePage/StoryGenerator";
+import DocumentViewer from "../components/HomePage/DocumentViewer";
+import SpinnerLoader from "../components/HomePage/SpinnerLoader";
 
 
 // Import hooks`
