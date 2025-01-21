@@ -13,3 +13,4 @@ python-dotenv
 sqlalchemy
 pydantic_ai
 unstract
+llmwhisperer-client
