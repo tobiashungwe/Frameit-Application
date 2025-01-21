@@ -1,31 +1,32 @@
 version: "3.8"
+
 services:
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
+    container_name: frameit-application-backend
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://frameit-admin:FrameIt123@mysql_container:3307/frameit
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: "mysql+mysqlconnector://user:password@mysql_container:3306/user_db"
     depends_on:
       - mysql
-    networks:
-      - app_network
+    volumes:
+      - .:/app  # Mount the current directory for development
 
   mysql:
     image: mysql:8.0
     container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: FrameIt123
+      MYSQL_DATABASE: frameit
+      MYSQL_USER: frameit-admin
+      MYSQL_PASSWORD: FrameIt123
     ports:
       - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: user_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    networks:
-      - app_network
+    volumes:
+      - db_data:/var/lib/mysql
 
-networks:
-  app_network:
-    driver: bridge
+volumes:
+  db_data:
