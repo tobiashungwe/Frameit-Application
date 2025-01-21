@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   backend:
     build:
@@ -9,6 +10,8 @@ services:
       DATABASE_URL: "mysql+mysqlconnector://user:password@mysql_container:3306/user_db"
     depends_on:
       - mysql
+    networks:
+      - app_network
 
   mysql:
     image: mysql:8.0
@@ -20,8 +23,9 @@ services:
       MYSQL_DATABASE: user_db
       MYSQL_USER: user
       MYSQL_PASSWORD: password
-    volumes:
-      - db_data:/var/lib/mysql
+    networks:
+      - app_network
 
-volumes:
-  db_data:
+networks:
+  app_network:
+    driver: bridge
