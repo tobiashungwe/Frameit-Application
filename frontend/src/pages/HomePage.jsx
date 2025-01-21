@@ -18,6 +18,7 @@ import SpinnerLoader from "../components/HomePage/SpinnerLoader";
 import useFileUpload from "../hooks/useFileUpload";
 import useStoryGeneration from "../hooks/useStoryGeneration";
 import useSearchTheme from "../hooks/useSearchTheme";
+import config from "../config";
 
 
 
@@ -78,7 +79,7 @@ function HomePage() {
     // Functions
     // =====================
     const fetchTranslations = async (language) => {
-        const response = await fetch(`http://localhost:8000/api/translations/${language}`);
+        const response = await fetch(`${config.API_BASE_URL}/api/translations/${language}`);
         if (!response.ok) {
             throw new Error(`Failed to load translations: ${response.statusText}`); // Include response details
         }

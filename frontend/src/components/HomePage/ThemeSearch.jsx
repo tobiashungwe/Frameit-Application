@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, CircularProgress, Autocomplete, TextField } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import KeywordsSelector from "./KeywordsSelector";
+import config from "../../config";
 
 
 const fetchThemes = async () => {
-  const response = await fetch("http://localhost:8000/api/themes/");
+  const response = await fetch(`${config.API_BASE_URL}/api/themes/`);
   if (!response.ok) {
     throw new Error(`Failed to fetch themes: ${response.statusText}`);
   }

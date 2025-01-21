@@ -4,6 +4,7 @@ import AuthForm from "../components/Auth/AuthForm";
 import ErrorSnackbar from "../components/Auth/ErrorSnackbar";
 import SuccessSnackbar from "../components/Auth/SuccessSnackbar";
 import LinksSection from "../components/Auth/LinksSection";
+import config from "../config";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
@@ -22,7 +23,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/users/register", {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
