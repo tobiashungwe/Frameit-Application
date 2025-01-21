@@ -36,9 +36,9 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: frameit-application-backend
-    # Expose port 8000 externally
+    # Expose port 9000 externally
     ports:
-      - "8000:8000"
+      - "9000:9000"
     # Ensure the backend service won't start until MySQL is at least up (container started).
     depends_on:
       mysql:
