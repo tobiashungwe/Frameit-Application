@@ -16,3 +16,4 @@ unstract
 llmwhisperer-client
 python-multipart
 passlib
+jwt
