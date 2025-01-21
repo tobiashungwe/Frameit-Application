@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException, File, UploadFile, Depends
 
 from backend.core.database import get_db_session
 from sqlalchemy.orm import Session
+
+from backend.domain.agents.metadata_extractor_agent import MetaDataExtractorAgent
 from backend.infrastructure.models.dependencies import (
     ThemeDependencies,
     ResearchDependencies,
@@ -243,14 +245,20 @@ async def upload_activity(
                 status_code=500, detail="Failed to extract text from the document."
             )
 
+        # Step 1: Sanitize
         sanitized_content = await theme_remover_agent.agent.run(
             f"Remove any themes from the following content. Content:{extracted_text}"
         )
         logfire.info("Content sanitized successfully.")
 
+        # Step 2: Extract metadata
+        meta_agent = MetaDataExtractorAgent(db)
+        extraction_result = await meta_agent.agent.run(extracted_text)
+
         return {
             "original_content": extracted_text,
             "sanitized_content": sanitized_content,
+            "extracted_metadata": extraction_result.data,
         }
 
     except Exception as e:
