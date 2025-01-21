@@ -3,6 +3,10 @@ import React from "react";
 import { Box, Typography, Button, Container, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
+// Import logos from the `src/assets/images` folder
+import frameItLogo from "../assets/images/FrameIt-logo.jpg";
+import howestLogo from "../assets/images/howest-logo.png";
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
@@ -11,21 +15,37 @@ const LandingPage = () => {
       {/* Header Section */}
       <Container maxWidth="lg">
         <Grid container alignItems="center" justifyContent="space-between">
+          {/* Left: App Title */}
           <Typography variant="h4" fontWeight="bold" color="text.primary">
             Frame it
           </Typography>
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/login")}
-            sx={{
-              textTransform: "none",
-              fontWeight: "bold",
-              borderRadius: "20px",
-              px: 3,
-            }}
-          >
-            Login
-          </Button>
+
+          {/* Right: Login Button with Howest Logo */}
+          <Box display="flex" alignItems="center" gap={2}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate("/login")}
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                borderRadius: "20px",
+                px: 3,
+              }}
+            >
+              Login
+            </Button>
+            <Box
+              component="img"
+              src={howestLogo} // Ensure correct path
+              alt="Howest Logo"
+              sx={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "50%", // Rounded corners
+                objectFit: "cover",
+              }}
+            />
+          </Box>
         </Grid>
       </Container>
 
@@ -40,6 +60,7 @@ const LandingPage = () => {
                 component="span"
                 color="primary"
                 fontWeight="bold"
+                variant="h3" // Same size as "An app that creates"
                 sx={{ display: "inline" }}
               >
                 wonderful activities
@@ -69,7 +90,7 @@ const LandingPage = () => {
           <Grid item xs={12} md={6}>
             <Box
               component="img"
-              src="/path/to/logo-image.png" // Replace with your actual logo path
+              src={frameItLogo}// Ensure correct path
               alt="FrameIt Logo"
               sx={{
                 width: "100%",
