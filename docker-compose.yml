@@ -52,6 +52,7 @@ services:
       DB_PORT: "3306"
       LOGFIRE_TOKEN: "4kkjLrKMyByq8vMqgd7d8vXBJBVZx6D2GLRq7CWLfhzg"
       GROQ_API_KEY: "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"
+      LLMWHISPERER_API_KEY: "sequ6Qlik-Y17Gn7rgn9i2jvzXxQISg9E7NHC79OZoA"
     # Mount local code into /app for live development
     volumes:
       - .:/app
