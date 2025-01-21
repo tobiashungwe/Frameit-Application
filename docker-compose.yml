@@ -38,7 +38,7 @@ services:
     container_name: frameit-application-backend
     # Expose port 9000 externally
     ports:
-      - "9000:9000"
+      - "5001:8000"
     # Ensure the backend service won't start until MySQL is at least up (container started).
     depends_on:
       mysql:
