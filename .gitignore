@@ -20,6 +20,10 @@ backend/venv/
 backend/env/
 
 
+# All the settings should not be published, because the keys would be public
+#docker-compose.yml
+
+
 
 
 # Node modules directories
