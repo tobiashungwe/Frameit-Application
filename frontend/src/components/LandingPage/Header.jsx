@@ -35,18 +35,18 @@ const Header = () => {
 
         {/* Login Button and Howest Logo */}
         <Box display="flex" alignItems="center" gap={2}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/login")}
-            sx={{
-              textTransform: "none",
-              fontWeight: "bold",
-              borderRadius: "20px",
-              px: 3,
-            }}
-          >
-            Login
-          </Button>
+          {/*<Button*/}
+          {/*  variant="outlined"*/}
+          {/*  onClick={() => navigate("/login")}*/}
+          {/*  sx={{*/}
+          {/*    textTransform: "none",*/}
+          {/*    fontWeight: "bold",*/}
+          {/*    borderRadius: "20px",*/}
+          {/*    px: 3,*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  Login*/}
+          {/*</Button>*/}
           <Box
             component="img"
             src={howestLogo}
