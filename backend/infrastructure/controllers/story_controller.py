@@ -180,7 +180,7 @@ async def generate_story(
                 logfire.info(
                     f"theme_details.details: {getattr(theme_details, 'details', None)}, type: {type(getattr(theme_details, 'details', None))}"
                 )
-
+                logfire.info(f"content_to_process: {content_to_process}")
                 exercise_content = (
                     content_to_process._all_messages[
                         -1
