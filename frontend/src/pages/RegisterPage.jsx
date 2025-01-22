@@ -40,7 +40,7 @@ const RegisterPage = () => {
         throw new Error(data.detail || "Registration failed");
       }
 
-      setSuccess(data.message || "Registration successful!");
+      if (success) setSuccess(data.message || "Registration successful!");
     } catch (err) {
       setError(err.message);
     }
