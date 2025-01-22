@@ -9,8 +9,6 @@ const Footer = () => {
           {[...Array(3)].map((_, index) => (
             <Grid item xs={4} key={index}>
               <Typography variant="body2" color="text.secondary">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Faucibus in
-                libero risus.
               </Typography>
             </Grid>
           ))}
