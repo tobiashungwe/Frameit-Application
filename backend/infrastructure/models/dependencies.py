@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -34,8 +35,8 @@ class GeneratorDependencies:
 
     theme: str
     exercise: str
-    theme_details: str
-    object_mapping: str
+    theme_details: List[str]
+    object_mapping: List[str]
 
 
 @dataclass

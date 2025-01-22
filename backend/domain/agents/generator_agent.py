@@ -31,6 +31,12 @@ class GeneratorAgent:
                 logfire.info(
                     f"Generating story for theme: '{ctx.deps.theme}' and activity: '{ctx.deps.exercise}'"
                 )
+                logfire.info(
+                    f"theme_details type: {type(ctx.deps.theme_details)}, "
+                    f"exercise type: {type(ctx.deps.exercise)}, "
+                    f"object_mapping type: {type(ctx.deps.object_mapping)}"
+                )
+
                 return generate_multimove_story_prompt(
                     ctx.deps.theme,
                     ctx.deps.theme_details,
@@ -42,7 +48,7 @@ class GeneratorAgent:
 def generate_multimove_story_prompt(
     theme: str,
     theme_details: list[str],
-    activity_data: list[str],
+    activity_data: str,
     materials_mapping: list[str],
 ) -> str:
     """
@@ -57,11 +63,12 @@ def generate_multimove_story_prompt(
     Returns:
     - str: A dynamically generated prompt tailored to Multimove principles, the provided theme, activity, and materials.
     """
+
     # Format theme details as a bulleted list
     theme_context = "\n".join([f"- {detail}" for detail in theme_details])
 
     # Format activity documentation as a bulleted list
-    activity_context = "\n".join([f"- {data}" for data in activity_data])
+    activity_context = "\n".join([f"- {data}" for data in activity_data.split("\n")])
 
     # Format materials mapping as a bulleted list
     materials_context = "\n".join([f"- {material}" for material in materials_mapping])

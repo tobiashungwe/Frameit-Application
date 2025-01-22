@@ -174,11 +174,26 @@ async def generate_story(
             # Step 4: Generate Story
             try:
                 logfire.info("Generating the story...")
+                logfire.info(
+                    f"theme_details: {theme_details}, type: {type(theme_details)}"
+                )
+                logfire.info(
+                    f"theme_details.details: {getattr(theme_details, 'details', None)}, type: {type(getattr(theme_details, 'details', None))}"
+                )
+
+                exercise_content = (
+                    content_to_process._all_messages[
+                        -1
+                    ].content  # Assuming the latest message contains the content
+                    if hasattr(content_to_process, "_all_messages")
+                    else str(content_to_process)  # Fallback if not a RunResult
+                )
+
                 story_result = await generator_agent.agent.run(
                     f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{content_to_process}', using the following keywords: {request.selected_keywords}.",
                     deps=GeneratorDependencies(
                         theme=request.theme,
-                        exercise=content_to_process,
+                        exercise=exercise_content,
                         theme_details=theme_details.details,
                         object_mapping=object_mapping.object_mapping,
                     ),
