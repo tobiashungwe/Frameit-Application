@@ -34,6 +34,9 @@ import os
 from unstract.llmwhisperer import LLMWhispererClientV2
 from dotenv import load_dotenv
 
+from backend.infrastructure.utils.extract_content_from_run_result_util import (
+    extract_content_from_run_result,
+)
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
 
@@ -181,13 +184,10 @@ async def generate_story(
                     f"theme_details.details: {getattr(theme_details, 'details', None)}, type: {type(getattr(theme_details, 'details', None))}"
                 )
                 logfire.info(f"content_to_process: {content_to_process}")
-                exercise_content = (
-                    content_to_process._all_messages[
-                        -1
-                    ].content  # Assuming the latest message contains the content
-                    if hasattr(content_to_process, "_all_messages")
-                    else str(content_to_process)  # Fallback if not a RunResult
-                )
+
+                exercise_content = extract_content_from_run_result(content_to_process)
+                logfire.info(f"RunResult structure: {content_to_process}")
+                logfire.info(f"RunResult type: {type(content_to_process)}")
 
                 story_result = await generator_agent.agent.run(
                     f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{content_to_process}', using the following keywords: {request.selected_keywords}.",
