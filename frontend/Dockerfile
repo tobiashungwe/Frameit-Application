@@ -2,11 +2,11 @@
 FROM node:18 as build
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-# Base image for serving the app
+# Serve the app
 FROM node:18
 WORKDIR /app
 RUN npm install -g serve
