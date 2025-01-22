@@ -6,9 +6,6 @@ from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
-
-
-from backend.core.logger import logger
 from backend.core.database import Base, engine
 from backend.infrastructure.controllers import (
     theme_controller,
@@ -23,9 +20,7 @@ Base.metadata.create_all(bind=engine)
 # Configure Logfire
 logfire.configure()
 logfire.install_auto_tracing(
-    modules=["backend"],
-    min_duration=0.01,
-    check_imported_modules="warn"
+    modules=["backend"], min_duration=0.01, check_imported_modules="warn"
 )
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
@@ -37,7 +32,7 @@ logfire.info("Starting FastAPI application...")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # adapt to your frontend
+    allow_origins=["http://server.hungwevision.com:3002"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,8 +46,11 @@ if static_dir.exists():
 # Include your controllers/routers
 app.include_router(theme_controller.router, prefix="/api/themes", tags=["Themes"])
 app.include_router(story_controller.router, prefix="/api/stories", tags=["Stories"])
-app.include_router(translation_controller.router, prefix="/api/translations", tags=["Translations"])
-app.include_router(user_controller.router, prefix="/api/users", tags=["Users"])  
+app.include_router(
+    translation_controller.router, prefix="/api/translations", tags=["Translations"]
+)
+app.include_router(user_controller.router, prefix="/api/users", tags=["Users"])
+
 
 @app.get("/health")
 def health_check():
