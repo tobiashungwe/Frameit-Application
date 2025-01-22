@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from backend.application.services.user_service import UserService
 from backend.core.database import get_db_session
 from backend.core.security import create_access_token
+from backend.infrastructure.models.requests.login_request import LoginRequest
 from backend.infrastructure.models.requests.register_request import RegisterRequest
 
 router = APIRouter()
@@ -20,9 +21,9 @@ def register(request: RegisterRequest, db: Session = Depends(get_db_session)):
 
 
 @router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db_session)):
+def login(request: LoginRequest, db: Session = Depends(get_db_session)):
     user_service = UserService(db)
-    user = user_service.authenticate_user(username, password)
+    user = user_service.authenticate_user(request.username, request.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"

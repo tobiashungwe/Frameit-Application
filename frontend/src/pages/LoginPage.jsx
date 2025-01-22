@@ -28,14 +28,21 @@ const LoginPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Invalid response from server");
+      }
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.detail || "Login failed");
       }
 
-      const data = await response.json();
-      console.log("Access token:", data.access_token);
+      // Handle successful login
       setSuccess("Login successful!");
+      console.log("Access Token:", data.access_token); // Use as needed
     } catch (err) {
       setError(err.message);
     }

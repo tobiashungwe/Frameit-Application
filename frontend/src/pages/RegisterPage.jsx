@@ -33,7 +33,7 @@ const RegisterPage = () => {
       try {
         data = await response.json();
       } catch {
-        throw new Error("Invalid response from server");
+        throw new Error("Invalid response from server");``
       }
 
       if (!response.ok) {
