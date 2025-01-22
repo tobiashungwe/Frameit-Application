@@ -4,14 +4,20 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
   Button,
   TextField,
-  IconButton,
+  Box,
+  Grid,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Typography,
+  Divider,
+  Paper,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
@@ -81,53 +87,79 @@ const TerrainManagerModal = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Manage Terrains</DialogTitle>
+      <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Typography variant="h6">Manage Terrains</Typography>
+        <IconButton onClick={onClose} size="small">
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent dividers>
-        {/* Display existing terrains */}
-        <List>
-          {terrains.map((terrain) => (
-            <ListItem key={terrain.id}>
-              {editTerrainId === terrain.id ? (
-                <TextField
-                  size="small"
-                  value={editTerrainName}
-                  onChange={(e) => setEditTerrainName(e.target.value)}
-                />
-              ) : (
-                <ListItemText primary={terrain.name} />
-              )}
-              <ListItemSecondaryAction>
+        {/* Existing Terrains */}
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          Existing Terrains
+        </Typography>
+        <Paper variant="outlined" sx={{ maxHeight: 200, overflow: "auto", mb: 3 }}>
+          <List>
+            {terrains.map((terrain) => (
+              <ListItem key={terrain.id} divider>
                 {editTerrainId === terrain.id ? (
-                  <IconButton onClick={handleUpdateTerrain} edge="end">
-                    <EditIcon />
-                  </IconButton>
+                  <TextField
+                    size="small"
+                    value={editTerrainName}
+                    onChange={(e) => setEditTerrainName(e.target.value)}
+                    fullWidth
+                  />
                 ) : (
-                  <IconButton onClick={() => handleEditTerrain(terrain)} edge="end">
-                    <EditIcon />
-                  </IconButton>
+                  <ListItemText primary={terrain.name} />
                 )}
-                <IconButton onClick={() => handleDeleteTerrain(terrain.id)} edge="end">
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
+                <ListItemSecondaryAction>
+                  {editTerrainId === terrain.id ? (
+                    <IconButton onClick={handleUpdateTerrain} edge="end">
+                      <EditIcon />
+                    </IconButton>
+                  ) : (
+                    <IconButton onClick={() => handleEditTerrain(terrain)} edge="end">
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  <IconButton onClick={() => handleDeleteTerrain(terrain.id)} edge="end">
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
 
-        {/* Add new terrain */}
-        <TextField
-          label="New Terrain Name"
-          value={newTerrainName}
-          onChange={(e) => setNewTerrainName(e.target.value)}
-          fullWidth
-          margin="dense"
-        />
-        <Button variant="contained" onClick={handleAddTerrain} sx={{ mt: 1 }}>
-          Add Terrain
-        </Button>
+        <Divider sx={{ mb: 2 }} />
+
+        {/* Add New Terrain */}
+        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+          Add New Terrain
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <TextField
+              label="Terrain Name"
+              value={newTerrainName}
+              onChange={(e) => setNewTerrainName(e.target.value)}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ height: "100%" }}
+              onClick={handleAddTerrain}
+            >
+              Add
+            </Button>
+          </Grid>
+        </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} color="inherit">
           Close
         </Button>
       </DialogActions>
