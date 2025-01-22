@@ -33,14 +33,15 @@ const RegisterPage = () => {
       try {
         data = await response.json();
       } catch {
-        throw new Error("Invalid response from server");``
+        throw new Error("Invalid response from server");
       }
 
       if (!response.ok) {
         throw new Error(data.detail || "Registration failed");
       }
 
-      if (success) setSuccess(data.message || "Registration successful!");
+      // Directly set success message
+      setSuccess(data.message || "Registration successful!");
     } catch (err) {
       setError(err.message);
     }
