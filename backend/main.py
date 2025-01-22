@@ -32,7 +32,7 @@ logfire.info("Starting FastAPI application...")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://server.hungwevision.com:3002"],
+    allow_origins=["https://frameit.hungwevision.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
