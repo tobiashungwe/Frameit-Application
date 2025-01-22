@@ -1,39 +1,37 @@
 import React from "react";
-import { Container, Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import Header from "../LandingPage/Header";
 
-/**
- * AuthLayout: A simple layout for auth pages 
- * with consistent styles & structure.
- */
 const AuthLayout = ({ title, children }) => {
   return (
-    <Container maxWidth="sm">
+    <Box>
+      {/* Add Header */}
+      <Header />
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minHeight: "100vh",
           justifyContent: "center",
+          minHeight: "calc(100vh - 80px)", // Adjust to exclude header height
+          p: 4,
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          {title}
-        </Typography>
         <Box
           sx={{
             width: "100%",
-            mt: 2,
-            p: 3,
+            maxWidth: "400px",
             boxShadow: 3,
             borderRadius: 2,
             bgcolor: "background.paper",
+            p: 3,
           }}
         >
+          <h1 style={{ textAlign: "center" }}>{title}</h1>
           {children}
         </Box>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

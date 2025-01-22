@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
+
 from backend.core.logger import logger
 from backend.core.database import Base, engine
 from backend.infrastructure.controllers import (
@@ -51,7 +52,7 @@ if static_dir.exists():
 app.include_router(theme_controller.router, prefix="/api/themes", tags=["Themes"])
 app.include_router(story_controller.router, prefix="/api/stories", tags=["Stories"])
 app.include_router(translation_controller.router, prefix="/api/translations", tags=["Translations"])
-app.include_router(user_controller.router, prefix="/api/users", tags=["Users"])  # <--- Add user routes
+app.include_router(user_controller.router, prefix="/api/users", tags=["Users"])  
 
 @app.get("/health")
 def health_check():

@@ -1,3 +1,6 @@
+import config from "../config";
+
+
 const useFileUpload = ({ t }) => {
   const handleUploadFile = async (file, setSanitizedContent, setOriginalContent, setIsLoading) => {
     if (!file) {
@@ -10,7 +13,7 @@ const useFileUpload = ({ t }) => {
 
     setIsLoading(true); 
     try {
-      const response = await fetch("http://localhost:8000/api/stories/upload_activity/", {
+      const response = await fetch(`${config.API_BASE_URL}/api/stories/upload_activity/`, {
         method: "POST",
         body: formData,
       });
