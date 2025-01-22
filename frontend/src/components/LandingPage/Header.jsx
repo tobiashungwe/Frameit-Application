@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Button, Grid, Container } from "@mui/material";
+import { Box, Typography, Grid, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import frameItLogo from "../../assets/images/FrameIt-logo.png";
 import howestLogo from "../../assets/images/howest-logo.png";
