@@ -28,12 +28,18 @@ const RegisterPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Invalid response from server");
+      }
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.detail || "Registration failed");
       }
 
-      const data = await response.json();
       setSuccess(data.message || "Registration successful!");
     } catch (err) {
       setError(err.message);
