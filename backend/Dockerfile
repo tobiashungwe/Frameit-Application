@@ -5,13 +5,13 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy only requirements to leverage Docker cache
-COPY backend/requirements_api.txt .
+COPY requirements_api.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements_api.txt
 
 # Copy the entire project into the container
-COPY . .
+COPY .. .
 
 # Ensure the Python path includes the backend folder
 ENV PYTHONPATH=/app
