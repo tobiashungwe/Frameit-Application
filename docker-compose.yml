@@ -63,7 +63,7 @@ services:
       dockerfile: Dockerfile
     container_name: frameit-application-frontend
     ports:
-      - "3000:3000" # Map port 3000 for the frontend
+      - "3002:3000" # Map port 3000 for the frontend
     depends_on:
       backend:
         condition: service_started
