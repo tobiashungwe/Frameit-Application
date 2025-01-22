@@ -2,8 +2,7 @@ import React from "react";
 import { Box, Container } from "@mui/material";
 import Header from "../components/LandingPage/Header";
 import MainContent from "../components/LandingPage/MainContent";
-import Statistics from "../components/LandingPage/Statistics";
-import Footer from "../components/LandingPage/Footer";
+
 
 const LandingPage = () => {
   return (
