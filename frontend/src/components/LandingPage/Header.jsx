@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Button, Grid, Container } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import frameItLogo from "../../assets/images/FrameIt-logo.png";
 import howestLogo from "../../assets/images/howest-logo.png";
 
 const Header = () => {
@@ -9,10 +10,28 @@ const Header = () => {
   return (
     <Container maxWidth="lg">
       <Grid container alignItems="center" justifyContent="space-between">
-        {/* App Title */}
-        <Typography variant="h4" fontWeight="bold" color="text.primary">
-          Frame it
-        </Typography>
+        {/* App Title with FrameIt Logo */}
+        <Box display="flex" alignItems="center" gap={1} onClick={() => navigate("/")}>
+          <Box
+            component="img"
+            src={frameItLogo}
+            alt="FrameIt Logo"
+            sx={{
+              width: "40px",
+              height: "40px",
+              objectFit: "contain",
+              cursor: "pointer",
+            }}
+          />
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            color="text.primary"
+            sx={{ cursor: "pointer" }}
+          >
+            Frame it
+          </Typography>
+        </Box>
 
         {/* Login Button and Howest Logo */}
         <Box display="flex" alignItems="center" gap={2}>

@@ -1,3 +1,5 @@
+import config from "../config";
+
 const useStoryGeneration = ({ t }) => {
   const handleGenerateStory = async ({
                                          theme,
@@ -29,7 +31,7 @@ const useStoryGeneration = ({ t }) => {
             sanitize: useSanitizedContent, // Toggle sanitization
         };
 
-      const response = await fetch("http://localhost:8000/api/stories/generate_story", {
+      const response = await fetch(`${config.API_BASE_URL}/api/stories/generate_story`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

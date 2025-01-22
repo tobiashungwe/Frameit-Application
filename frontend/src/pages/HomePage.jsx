@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {ThemeProvider, createTheme, Snackbar, Container, Box, Typography} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import "../i18n";
+import { useNavigate } from "react-router-dom";
 
 // Import child components
 import LanguageSelector from "../components/HomePage/LanguageSelector";
@@ -18,6 +19,7 @@ import SpinnerLoader from "../components/HomePage/SpinnerLoader";
 import useFileUpload from "../hooks/useFileUpload";
 import useStoryGeneration from "../hooks/useStoryGeneration";
 import useSearchTheme from "../hooks/useSearchTheme";
+import config from "../config";
 
 
 
@@ -66,7 +68,7 @@ function HomePage() {
 
    // Hooks
    const { handleUploadFile } = useFileUpload({ t });
-   const { handleGenerateStory } = useStoryGeneration({ t });
+   //const { handleGenerateStory } = useStoryGeneration({ t });
    const { keywords, isSearching, hasSearched, handleSearchTheme } = useSearchTheme({ t });
 
   useEffect(() => {
@@ -78,7 +80,7 @@ function HomePage() {
     // Functions
     // =====================
     const fetchTranslations = async (language) => {
-        const response = await fetch(`http://localhost:8000/api/translations/${language}`);
+        const response = await fetch(`${config.API_BASE_URL}/api/translations/${language}`);
         if (!response.ok) {
             throw new Error(`Failed to load translations: ${response.statusText}`); // Include response details
         }
@@ -103,6 +105,23 @@ function HomePage() {
 
     }
   };
+
+  const navigate = useNavigate();
+
+const handleGenerateStory = async () => {
+  setIsGenerating(true);
+
+  // Simulate story generation (you can replace this with your actual API logic)
+  setTimeout(() => {
+    const generatedStory = "This is the generated story content!";
+    setStory(generatedStory);
+    setIsGenerating(false);
+
+    // Navigate to the EditorScreen and pass the story via state
+    navigate("/editor", { state: { story: generatedStory } });
+  }, 2000);
+};
+
 
   // =====================
   // HANDLERS
@@ -189,23 +208,8 @@ function HomePage() {
 
 
 
-          <StoryGenerator
-            onGenerate={() =>
-              handleGenerateStory({
-                  theme,
-                  file,
-                  sanitizedContent,
-                  originalContent,
-                  useSanitizedContent,
-                  selectedKeywords,
-                  groupCount,
-                  terrain,
-                  material,
-                  language,
-                  setStory,
-                  setIsGenerating,
-              })
-            }
+<StoryGenerator
+            onGenerate={handleGenerateStory}
             isGenerating={isGenerating}
             story={story}
             t={t}

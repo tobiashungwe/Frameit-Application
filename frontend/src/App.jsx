@@ -7,6 +7,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import HomePage from "./pages/HomePage";
 import LandingPage from "./pages/LandingPage";
+import EditorScreen from "./pages/EditorPage";
 
 // If you have a main "Home" or other pages, import them here
 // import HomePage from "./pages/HomePage";
@@ -33,6 +34,7 @@ function App() {
 
           {/* Example Private or Home route */}
           <Route path="/home" element={<HomePage />} />
+          <Route path="/editor" element={<EditorScreen />} />
           <Route path="/" element={<LandingPage />} />
           {/* Fallback route */}
           <Route path="*" element={<HomePage />} />

@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Snackbar,
-  Link,
-  Box,
-} from "@mui/material";
 import AuthLayout from "../components/Layout/AuthLayout";
+import AuthForm from "../components/Auth/AuthForm";
+import ErrorSnackbar from "../components/Auth/ErrorSnackbar";
+import SuccessSnackbar from "../components/Auth/SuccessSnackbar";
+import LinksSection from "../components/Auth/LinksSection";
+import config from "../config";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -19,28 +17,32 @@ const LoginPage = () => {
     setError("");
     setSuccess("");
 
-    // Basic validation
     if (!username || !password) {
       setError("Please fill out all fields.");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/users/login", {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("Invalid response from server");
+      }
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.detail || "Login failed");
       }
 
-      const data = await response.json();
-      // Typically store token in context or localStorage
-      console.log("Access token:", data.access_token);
-
+      // Handle successful login
       setSuccess("Login successful!");
+      console.log("Access Token:", data.access_token); // Use as needed
     } catch (err) {
       setError(err.message);
     }
@@ -48,58 +50,33 @@ const LoginPage = () => {
 
   return (
     <AuthLayout title="Login">
-      <Box component="form" onSubmit={handleLogin}>
-        <TextField
-          label="Username"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          type="password"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          fullWidth
-        >
-          Login
-        </Button>
-
-        <Box sx={{ mt: 2 }}>
-          <Link href="/register" underline="hover">
-            Don&apos;t have an account? Register
-          </Link>
-          <br />
-          <Link href="/forgot-password" underline="hover">
-            Forgot your password?
-          </Link>
-        </Box>
-      </Box>
-
-      <Snackbar
-        open={Boolean(error)}
-        onClose={() => setError("")}
-        message={error}
-        autoHideDuration={6000}
+      <AuthForm
+        fields={[
+          {
+            label: "Username",
+            value: username,
+            onChange: (e) => setUsername(e.target.value),
+          },
+          {
+            label: "Password",
+            type: "password",
+            value: password,
+            onChange: (e) => setPassword(e.target.value),
+          },
+        ]}
+        buttonLabel="Login"
+        onSubmit={handleLogin}
       />
-      <Snackbar
-        open={Boolean(success)}
-        onClose={() => setSuccess("")}
-        message={success}
-        autoHideDuration={6000}
+
+      <LinksSection
+        links={[
+          { href: "/register", label: "Don't have an account? Register" },
+          { href: "/forgot-password", label: "Forgot your password?" },
+        ]}
       />
+
+      <ErrorSnackbar error={error} onClose={() => setError("")} />
+      <SuccessSnackbar success={success} onClose={() => setSuccess("")} />
     </AuthLayout>
   );
 };

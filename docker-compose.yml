@@ -1,0 +1,85 @@
+version: "3.8"
+
+services:
+  ##############################
+  # MySQL Database
+  ##############################
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: frameit
+      MYSQL_USER: frameit-admin
+      MYSQL_PASSWORD: FrameIt123
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - app_network
+
+  ##############################
+  # Backend (FastAPI)
+  ##############################
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: frameit-application-backend
+    ports:
+      - "5001:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_USER: "frameit-admin"
+      DB_PASS: "FrameIt123"
+      DB_HOST: "mysql"
+      DB_NAME: "frameit"
+      DB_PORT: "3306"
+      DATABASE_URL: "mysql+pymysql://frameit-admin:FrameIt123@mysql:3306/frameit"
+      LOGFIRE_TOKEN: "4kkjLrKMyByq8vMqgd7d8vXBJBVZx6D2GLRq7CWLfhzg"
+      GROQ_API_KEY: "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"
+      LLMWHISPERER_API_KEY: "sequ6Qlik-Y17Gn7rgn9i2jvzXxQISg9E7NHC79OZoA"
+    volumes:
+      - .:/app
+      - ./.env:/app/backend/.env
+    networks:
+      - app_network
+
+  ##############################
+  # Frontend (React)
+  ##############################
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frameit-application-frontend
+    ports:
+      - "3002:3000" # Map port 3000 for the frontend
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      REACT_APP_API_URL: "https://frameit-api.hungwevision.com/" # Backend API URL
+    networks:
+      - app_network
+
+##############################
+# Named volume for database
+##############################
+volumes:
+  db_data:
+
+##############################
+# Custom network
+##############################
+networks:
+  app_network:

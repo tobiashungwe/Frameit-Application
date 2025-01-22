@@ -1,4 +1,5 @@
 import { useState } from "react";
+import config from "../config";
 
 const useSearchTheme = ({ t }) => {
   const [isSearching, setIsSearching] = useState(false);
@@ -14,7 +15,7 @@ const useSearchTheme = ({ t }) => {
     setIsSearching(true);
     setHasSearched(true);
     try {
-      const response = await fetch("http://localhost:8000/api/stories/generate_keywords", {
+      const response = await fetch(`${config.API_BASE_URL}/api/stories/generate_keywords`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ theme }),

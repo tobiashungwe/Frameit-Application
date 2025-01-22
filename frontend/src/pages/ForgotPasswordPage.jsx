@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { TextField, Button, Snackbar, Box, Link } from "@mui/material";
 import AuthLayout from "../components/Layout/AuthLayout";
+import AuthForm from "../components/Auth/AuthForm";
+import ErrorSnackbar from "../components/Auth/ErrorSnackbar";
+import SuccessSnackbar from "../components/Auth/SuccessSnackbar";
+import LinksSection from "../components/Auth/LinksSection";
+import config from "../config";
 
 const ForgotPasswordPage = () => {
   const [emailOrUser, setEmailOrUser] = useState("");
@@ -18,8 +22,7 @@ const ForgotPasswordPage = () => {
     }
 
     try {
-      // Dummy endpoint. Adjust to your actual forgot-password endpoint.
-      const response = await fetch("http://localhost:8000/api/users/forgot-password", {
+      const response = await fetch(`${config.API_BASE_URL}/api/users/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email_or_username: emailOrUser }),
@@ -38,45 +41,22 @@ const ForgotPasswordPage = () => {
 
   return (
     <AuthLayout title="Forgot Password">
-      <Box component="form" onSubmit={handleForgotPassword}>
-        <TextField
-          label="Email or Username"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={emailOrUser}
-          onChange={(e) => setEmailOrUser(e.target.value)}
-        />
-
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          fullWidth
-        >
-          Send Reset Instructions
-        </Button>
-
-        <Box sx={{ mt: 2 }}>
-          <Link href="/login" underline="hover">
-            Back to Login
-          </Link>
-        </Box>
-      </Box>
-
-      <Snackbar
-        open={Boolean(error)}
-        onClose={() => setError("")}
-        message={error}
-        autoHideDuration={6000}
+      <AuthForm
+        fields={[
+          {
+            label: "Email or Username",
+            value: emailOrUser,
+            onChange: (e) => setEmailOrUser(e.target.value),
+          },
+        ]}
+        buttonLabel="Send Reset Instructions"
+        onSubmit={handleForgotPassword}
       />
-      <Snackbar
-        open={Boolean(success)}
-        onClose={() => setSuccess("")}
-        message={success}
-        autoHideDuration={6000}
-      />
+
+      <LinksSection links={[{ href: "/login", label: "Back to Login" }]} />
+
+      <ErrorSnackbar error={error} onClose={() => setError("")} />
+      <SuccessSnackbar success={success} onClose={() => setSuccess("")} />
     </AuthLayout>
   );
 };
