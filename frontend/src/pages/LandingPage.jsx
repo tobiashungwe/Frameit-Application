@@ -12,9 +12,9 @@ const LandingPage = () => {
       <Container maxWidth="lg" sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Header />
         <MainContent />
-        <Statistics />
+        {/*<Statistics />*/}
       </Container>
-      <Footer />
+      {/*<Footer />*/}
     </Box>
   );
 };
