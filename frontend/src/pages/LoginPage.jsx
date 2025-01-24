@@ -13,7 +13,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,7 +49,7 @@ const LoginPage = () => {
 
       // Redirect to the homepage
       setTimeout(() => {
-        navigate("/"); // Redirect to the homepage after a short delay
+        navigate("/home");
       }, 1000); // Delay is optional, used to show the success message briefly
     } catch (err) {
       setError(err.message);
