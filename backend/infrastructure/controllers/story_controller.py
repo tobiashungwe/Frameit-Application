@@ -185,15 +185,34 @@ async def generate_story(
                 )
                 logfire.info(f"content_to_process: {content_to_process}")
 
-                object_mapping = extract_content_from_run_result(object_mapping)
-                logfire.info(f"object_mapping: {object_mapping_result}")
-                theme_details = extract_content_from_run_result(theme_details)
-                logfire.info(
-                    f"theme_details.details: {theme_details}, type: {type(theme_details)}"
-                )
-                exercise_content = extract_content_from_run_result(content_to_process)
-                logfire.info(f"RunResult structure: {content_to_process}")
-                logfire.info(f"RunResult type: {type(content_to_process)}")
+                try:
+                    object_mapping = extract_content_from_run_result(object_mapping)
+                    logfire.info(f"object_mapping: {object_mapping}")
+                except Exception as e:
+                    logfire.error(
+                        f"Failed to extract object_mapping: {e}", exc_info=True
+                    )
+
+                try:
+                    theme_details = extract_content_from_run_result(theme_details)
+                    logfire.info(
+                        f"theme_details.details: {theme_details}, type: {type(theme_details)}"
+                    )
+                except Exception as e:
+                    logfire.error(
+                        f"Failed to extract theme_details: {e}", exc_info=True
+                    )
+
+                try:
+                    exercise_content = extract_content_from_run_result(
+                        content_to_process
+                    )
+                    logfire.info(f"RunResult structure: {exercise_content}")
+                    logfire.info(f"RunResult type: {type(content_to_process)}")
+                except Exception as e:
+                    logfire.error(
+                        f"Failed to extract exercise_content: {e}", exc_info=True
+                    )
 
                 story_result = await generator_agent.agent.run(
                     f"Create an engaging story for children that uses the theme: '{request.theme}' and incorporates the activity: '{content_to_process}', using the following keywords: {request.selected_keywords}.",
