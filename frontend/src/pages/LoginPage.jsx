@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
 import AuthLayout from "../components/Layout/AuthLayout";
 import AuthForm from "../components/Auth/AuthForm";
 import ErrorSnackbar from "../components/Auth/ErrorSnackbar";
@@ -11,6 +12,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const navigate = useNavigate(); // Initialize the navigate function
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,6 +46,11 @@ const LoginPage = () => {
       // Handle successful login
       setSuccess("Login successful!");
       console.log("Access Token:", data.access_token); // Use as needed
+
+      // Redirect to the homepage
+      setTimeout(() => {
+        navigate("/"); // Redirect to the homepage after a short delay
+      }, 1000); // Delay is optional, used to show the success message briefly
     } catch (err) {
       setError(err.message);
     }
