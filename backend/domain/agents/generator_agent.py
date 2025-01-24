@@ -20,7 +20,7 @@ class GeneratorAgent:
             model=ModelConfig.DEFAULT_MODEL,
             deps_type=GeneratorDependencies,
             result_type=ThemeResult,
-            retries=3,
+            retries=5,
             system_prompt=static_prompt,
         )
 

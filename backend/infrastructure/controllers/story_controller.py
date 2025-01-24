@@ -185,6 +185,12 @@ async def generate_story(
                 )
                 logfire.info(f"content_to_process: {content_to_process}")
 
+                object_mapping = extract_content_from_run_result(object_mapping)
+                logfire.info(f"object_mapping: {object_mapping_result}")
+                theme_details = extract_content_from_run_result(theme_details)
+                logfire.info(
+                    f"theme_details.details: {theme_details}, type: {type(theme_details)}"
+                )
                 exercise_content = extract_content_from_run_result(content_to_process)
                 logfire.info(f"RunResult structure: {content_to_process}")
                 logfire.info(f"RunResult type: {type(content_to_process)}")

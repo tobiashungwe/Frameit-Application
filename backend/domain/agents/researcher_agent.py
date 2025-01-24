@@ -22,6 +22,7 @@ class ResearchAgent:
             deps_type=ResearchDependencies,
             result_type=ResearchResponse,
             system_prompt=static_prompt,
+            retries=3,
         )
 
         @self.agent.system_prompt

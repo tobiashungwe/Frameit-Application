@@ -19,6 +19,7 @@ class AdapterAgent:
             deps_type=AdapterDependencies,
             result_type=AdapterResponse,
             system_prompt=static_prompt,
+            retries=3,
         )
 
         @self.agent.system_prompt

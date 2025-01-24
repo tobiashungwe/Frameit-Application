@@ -15,6 +15,5 @@ class ThemeRemoverAgent:
         )
 
         self.agent = Agent(
-            model=ModelConfig.DEFAULT_MODEL,
-            system_prompt=base_prompt,
+            model=ModelConfig.DEFAULT_MODEL, system_prompt=base_prompt, retries=3
         )
